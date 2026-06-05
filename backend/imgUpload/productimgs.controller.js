@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     try {
       const {vendor_id,product_id,gender,color,size,product_type} = req.params
-      console.log("**********************params:",{vendor_id,product_id,gender,color,size,product_type});
+      // console.log("**********************params:",{vendor_id,product_id,gender,color,size,product_type});
       
       const folderPaths = path.join(
         process.cwd(),
@@ -131,10 +131,9 @@ router.post("/delete",async (req, res) => {
   }
 })
 
-
-
-router.put(
-  "/update/:vendor_id/:product_id/:gender/:color/:size/:product_type/:category_id/:product_img_id",
+// update images
+router.post(
+  "/update/:vendor_id/:product_id/:gender/:color/:size/:product_type/:category_id",
   (req, res) => {
 
     uploadSingle(req, res, async (err) => {
@@ -145,7 +144,8 @@ router.put(
 
         // ✅ NOW multer has parsed body
         const { oldImagePath } = req.body;
-        console.log("**********oldImagePath:",req.params);
+        console.log("**********oldImagePath:",req.body);
+
         const { vendor_id, product_id, product_img_id} = req.params
         if (!oldImagePath) {
           return res.status(400).json({ message: "Old image path required" });

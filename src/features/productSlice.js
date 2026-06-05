@@ -14,7 +14,7 @@ const productSlice = createSlice({
             state.productsData = action.payload.productsData
         },
         setProductId:(state,action)=>{
-            console.log("actions:",action.payload);
+            console.log("actions:",action.payload.productId.data);
             state.productId = action.payload.productId.data
         },
         removeProductId:(state)=>{

@@ -27,7 +27,7 @@ const emptyForm = {
 
 const productSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']
 
-let BASE_URL = "http://localhost:3000/"
+let BASE_URL = "http://localhost:3000/uploads/"
 
 export default function Products() {
 
@@ -78,7 +78,9 @@ export default function Products() {
       product_stock: p.product_stock,
       vendor_id: p.vendor_id,
       category_id: p.category_id
-    }); setEditId(p.product_id); setModal('edit'); 
+    }); 
+    setEditId(p.product_id); 
+    setModal('edit'); 
     setEditImg(p.productimgs)
   }
   const closeModal = () => { setModal(null); setEditId(null) }
@@ -96,16 +98,32 @@ export default function Products() {
       // setProducts(prev => prev.map(p => p.product_id === editId ? { ...p, ...form, price: parseFloat(form.new_price) || 0, stock: parseInt(form.product_stock) || 0 } : p))
       const obj = {
         vendor_id: form.vendor_id,
-        product_id: form.product_id,
+        product_id: editId,
         product_gender: form.product_gender,
         product_color: form.product_color,
         product_size: form.product_size,
         product_type: form.product_type,
         category_id: form.category_id,
-        product_img_id: form.product_img_id
       }
-      dispatch(updateProduct(editId, form))
+      // console.log("obj:",obj);
+      // console.log("productImgPaths:",editImg[0]);
+      
+      // Image update upload
+      const formData = new FormData();
+      if (singleImage) {
+        formData.append('single', singleImage[0])
+        formData.append('oldImagePath', editImg[0])
+      }
+      // multiImages.forEach((img) => {
+      //   formData.append("multiple", img)
+      // })
+
+
+      
+      updateProductImg(formData, obj)
+      // dispatch(updateProduct(editId, form))
     }
+    // closeModal() //nadimuthu, move this to image upload step
   }
 
   const handleDelete = () => {

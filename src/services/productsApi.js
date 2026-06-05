@@ -3,62 +3,62 @@ import { setProductsImages } from "../features/productImageSlice";
 import { setProductId, setProducts } from "../features/productSlice";
 
 export const createProduct = (productData) => async (dispatch) => {
-  try {
-    const response = await axiosInstance.post("/product/", productData);
-    dispatch(setProductId({
-      productId:response.data
-    }))
-    return response.data;
+    try {
+        const response = await axiosInstance.post("/product/", productData);
+        dispatch(setProductId({
+            productId: response.data
+        }))
+        return response.data;
     } catch (error) {
-    console.error("Error creating product:", error);
-    throw error;
-  }
+        console.error("Error creating product:", error);
+        throw error;
+    }
 };
 
-export const getProducts = (vendor_id)=> async (dispatch) => {
-  try {
-    const response = await axiosInstance.get(`/product/${vendor_id}`);
-    // //console.log("0000000000000000",response.data);
-    dispatch(setProducts({
-      productsData:response.data
-    }))
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    throw error;
-  }
+export const getProducts = (vendor_id) => async (dispatch) => {
+    try {
+        const response = await axiosInstance.get(`/product/${vendor_id}`);
+        // //console.log("0000000000000000",response.data);
+        dispatch(setProducts({
+            productsData: response.data
+        }))
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching products:", error);
+        throw error;
+    }
 };
 
 export const updateProduct = (productId, productData) => async (dispatch) => {
-  try {
-    //console.log("Updating product with ID:", productId, "and data:", productData);
-    const response = await axiosInstance.put(`/product/update/${productId}`, productData);
-    dispatch(setProductId({
-      productId:response.data
-    }))
-    return response.data;
+    try {
+        //console.log("Updating product with ID:", productId, "and data:", productData);
+        const response = await axiosInstance.put(`/product/update/${productId}`, productData);
+        dispatch(setProductId({
+            productId: response.data
+        }))
+        return response.data;
     } catch (error) {
-    console.error("Error updating product:", error);
-    throw error;
-  }
+        console.error("Error updating product:", error);
+        throw error;
+    }
 };
 
 // **********************image upload*************************//
-export const uploadProductImg = (formData,params) => async (dispatch) => {
+export const uploadProductImg = (formData, params) => async (dispatch) => {
     //console.log("formData:", formData);
 
     const { vendor_id,
-            product_id,
-            product_gender,
-            product_color,
-            product_size,
-            product_type,
-            category_id,
-        } = params
-        //console.log("params:",params);
-        
+        product_id,
+        product_gender,
+        product_color,
+        product_size,
+        product_type,
+        category_id,
+    } = params
+    //console.log("params:",params);
+
     try {
-        
+
         const res = await axiosInstance.post(
             `/uploads/upload/${vendor_id}/${product_id}/${product_gender}/${product_color}/${product_size}/${product_type}/${category_id}`,
             formData,
@@ -93,23 +93,33 @@ export const deleteProductImg = async (imgPath) => {
     }
 }
 
-export const updateProductImg = async (formData,obj) => {
+export const updateProductImg = async (formData, obj) => {
+    const { vendor_id,
+        product_id,
+        product_gender,
+        product_color,
+        product_size,
+        product_type,
+        category_id,
+    } = obj
+    console.log("params:",obj);
+
     try {
-        const {
-            vendor_id,
-            product_id,
-            product_gender,
-            product_color,
-            product_size,
-            product_type,
-            category_id,
-            product_img_id
-        } = obj
-        // //console.log("obj:",obj);
-        // //console.log("formData:",formData);
-        
-        // const res = await axiosInstance.put(`/uploads/update/${vendor_id}/${product_id}/${product_gender}/${product_color}/${product_size}/${product_type}/${category_id}/${product_img_id}`, formData);
-        // //console.log(res.data);
+
+        const res = await axiosInstance.post(
+            `/uploads/update/${vendor_id}/${product_id}/${product_gender}/${product_color}/${product_size.toString()}/${product_type}/${category_id}`,
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+        dispatch(setProductsImages({
+            productImgPaths: res.data.data
+        }))
+        //console.log(res.data);
+        return res.data
     } catch (err) {
         console.error(err);
     }

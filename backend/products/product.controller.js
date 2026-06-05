@@ -54,8 +54,8 @@ async function getAllProducts(req,res,next) {
 }
 async function updateProduct(req,res,next) {
     try {
-        console.log("req.body",req.body)
-        console.log("id:",req.params.id);
+        // console.log("req.body",req.body)
+        // console.log("id:",req.params.id);
         
         const data = await req.body
         const product_id = await req.params.id
