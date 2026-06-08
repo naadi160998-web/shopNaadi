@@ -18,9 +18,16 @@ export const createProduct = (productData) => async (dispatch) => {
 export const getProducts = (vendor_id) => async (dispatch) => {
     try {
         const response = await axiosInstance.get(`/product/${vendor_id}`);
-        // //console.log("0000000000000000",response.data);
+        const datas = response.data;
+        const updateData = []
+
+        for (let i = 0; i < datas.length; i++) {
+            datas[i].productimgs.reverse()
+            updateData.push(datas[i])
+        }
+        
         dispatch(setProducts({
-            productsData: response.data
+            productsData: datas
         }))
         return response.data;
     } catch (error) {
@@ -101,13 +108,16 @@ export const updateProductImg = async (formData, obj) => {
         product_size,
         product_type,
         category_id,
+        product_img_id
     } = obj
     console.log("params:",obj);
 
     try {
-
-        const res = await axiosInstance.post(
-            `/uploads/update/${vendor_id}/${product_id}/${product_gender}/${product_color}/${product_size.toString()}/${product_type}/${category_id}`,
+        /****
+         * /update/:vendor_id/:product_id/:gender/:color/:size/:product_type/:category_id/:product_img_id
+         */
+        const res = await axiosInstance.put(
+            `/uploads/update/${vendor_id}/${product_id}/${product_gender}/${product_color}/${product_size.toString()}/${product_type}/${category_id}/${product_img_id}`,
             formData,
             {
                 headers: {
@@ -118,7 +128,7 @@ export const updateProductImg = async (formData, obj) => {
         dispatch(setProductsImages({
             productImgPaths: res.data.data
         }))
-        //console.log(res.data);
+        console.log(res.data);
         return res.data
     } catch (err) {
         console.error(err);

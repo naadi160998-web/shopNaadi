@@ -86,7 +86,7 @@ async function getProductUserId(params) {
         
         if(products === undefined) throw new Error("Products not found");
         
-        // console.log("Get products:",products)
+        console.log("Get products:",products)
         return products;
         
     } catch (error) {

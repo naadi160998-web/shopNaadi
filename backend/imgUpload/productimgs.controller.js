@@ -68,9 +68,10 @@ router.post(
       const {vendor_id,product_id,category_id} = req.params;
     
       const files = []
-      const single = req.files.single ? req.files.single.map(e => {return e.path.split("\\").slice(7).join("/")}) : false;
-      const multiple = req.files.multiple ? req.files.multiple.map(e => {return e.path.split("\\").slice(7).join("/")}) : false ;
-    
+      const single = req.files.single ? req.files.single.map(e => {return e.path.split("\\").slice(6).join("/")}) : false;
+      const multiple = req.files.multiple ? req.files.multiple.map(e => {return e.path.split("\\").slice(6).join("/")}) : false ;
+      // console.log("9********************single:",single);
+      
       if(single){
         files.push(...single)
       }
@@ -132,8 +133,8 @@ router.post("/delete",async (req, res) => {
 })
 
 // update images
-router.post(
-  "/update/:vendor_id/:product_id/:gender/:color/:size/:product_type/:category_id",
+router.put(
+  "/update/:vendor_id/:product_id/:gender/:color/:size/:product_type/:category_id/:product_img_id",
   (req, res) => {
 
     uploadSingle(req, res, async (err) => {
@@ -155,19 +156,39 @@ router.post(
           return res.status(400).json({ message: "New image required" });
         }
 
-        const newImagePath = req.file.path.replace(/\\/g, "/").split("/").slice(7).join("/");
+        const newImagePath = req.file.path.replace(/\\/g, "/").split("/").slice(6).join("/");
         console.log("***********newImagePath:",newImagePath);
+
+        if (!newImagePath) {
+      return res.status(400).json({ message: "Image path required" });
+    }
+
+        // 🔥 full system path
+        const fullPath = path.join(process.cwd(), oldImagePath);
+
+        console.log("***************fullPath:",fullPath);
         
-        // 🔥 delete old image
-        const oldFullPath = path.join(process.cwd(), oldImagePath);
-        console.log("oldFullPath:",oldFullPath);
-        
-        if (fs.existsSync(oldFullPath)) {
-          fs.unlinkSync(oldFullPath);
-          console.log("Old image deleted");
+        // ✅ 1. Delete file from folder
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+          console.log("File deleted:", fullPath);
+        } else {
+          console.log("File not found:", fullPath);
         }
 
-        removeEmptyFolders(path.dirname(oldFullPath));
+        // call it
+        removeEmptyFolders(path.dirname(fullPath));
+        
+        // // 🔥 delete old image
+        // const oldFullPath = path.join(process.cwd(), oldImagePath);
+        // console.log("oldFullPath:",oldFullPath);
+        
+        // if (fs.existsSync(oldFullPath)) {
+        //   fs.unlinkSync(oldFullPath);
+        //   console.log("Old image deleted");
+        // }
+
+        // removeEmptyFolders(path.dirname(oldFullPath));
 
         const result = productimgService.updateProductImgs(newImagePath, vendor_id, product_id, product_img_id)
         console.log("update result:",result);

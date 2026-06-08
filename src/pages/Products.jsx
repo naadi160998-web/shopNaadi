@@ -27,12 +27,13 @@ const emptyForm = {
 
 const productSizes = ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']
 
-let BASE_URL = "http://localhost:3000/uploads/"
+let BASE_URL = "http://localhost:3000/"
 
 export default function Products() {
 
   const productDatas = useSelector(state => state.products.productsData)
   // console.log("productDatas:",productDatas);
+  // const { product_id, vendor_id, category_id, product_gender, product_size, product_type, product_color } = useSelector(state => state.products.productId)
   const { product_id, vendor_id, category_id, product_gender, product_size, product_type, product_color } = useSelector(state => state.products.productId)
   console.log("productId:", product_id);
   const productImgPaths = useSelector(state => state.productImages.productImgPaths)
@@ -82,6 +83,8 @@ export default function Products() {
     setEditId(p.product_id); 
     setModal('edit'); 
     setEditImg(p.productimgs)
+    console.log("edit img:",p.productimgs);
+    
   }
   const closeModal = () => { setModal(null); setEditId(null) }
 
@@ -104,21 +107,20 @@ export default function Products() {
         product_size: form.product_size,
         product_type: form.product_type,
         category_id: form.category_id,
+        product_img_id: editImg[0]?.product_img_id
       }
-      // console.log("obj:",obj);
-      // console.log("productImgPaths:",editImg[0]);
+      console.log("obj:",obj);
+      console.log("productImgPaths:",editImg[0].product_img_src);
       
       // Image update upload
       const formData = new FormData();
       if (singleImage) {
-        formData.append('single', singleImage[0])
-        formData.append('oldImagePath', editImg[0])
+        formData.append('image', singleImage[0])
+        formData.append('oldImagePath', editImg[0].product_img_src)
       }
       // multiImages.forEach((img) => {
       //   formData.append("multiple", img)
       // })
-
-
       
       updateProductImg(formData, obj)
       // dispatch(updateProduct(editId, form))
