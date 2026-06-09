@@ -98,31 +98,31 @@ export default function Products() {
       setNextId(n => n + 1)
       dispatch(createProduct(form))
     } else {
+
+      // update input fields
+
       // setProducts(prev => prev.map(p => p.product_id === editId ? { ...p, ...form, price: parseFloat(form.new_price) || 0, stock: parseInt(form.product_stock) || 0 } : p))
-      const obj = {
-        vendor_id: form.vendor_id,
-        product_id: editId,
-        product_gender: form.product_gender,
-        product_color: form.product_color,
-        product_size: form.product_size,
-        product_type: form.product_type,
-        category_id: form.category_id,
-        product_img_id: editImg[0]?.product_img_id
-      }
-      console.log("obj:",obj);
-      console.log("productImgPaths:",editImg[0].product_img_src);
+      // const obj = {
+      //   vendor_id: form.vendor_id,
+      //   product_id: editId,
+      //   product_gender: form.product_gender,
+      //   product_color: form.product_color,
+      //   product_size: form.product_size,
+      //   product_type: form.product_type,
+      //   category_id: form.category_id,
+      //   product_img_id: editImg[0]?.product_img_id
+      // }
+      // console.log("obj:",obj);
+      // console.log("productImgPaths:",editImg[0].product_img_src);
       
-      // Image update upload
-      const formData = new FormData();
-      if (singleImage) {
-        formData.append('image', singleImage[0])
-        formData.append('oldImagePath', editImg[0].product_img_src)
-      }
-      // multiImages.forEach((img) => {
-      //   formData.append("multiple", img)
-      // })
+      // // Image update upload
+      // const formData = new FormData();
+      // if (singleImage) {
+      //   formData.append('image', singleImage[0])
+      //   formData.append('oldImagePath', editImg[0].product_img_src)
+      // }
       
-      updateProductImg(formData, obj)
+      // updateProductImg(formData, obj)
       // dispatch(updateProduct(editId, form))
     }
     // closeModal() //nadimuthu, move this to image upload step
@@ -170,6 +170,36 @@ export default function Products() {
     ////console.log("finish");
     dispatch(removeProductId())
     closeModal()
+  }
+
+  // handle single by single update image gallery
+  const handleGalleryImage = (product_img_id,product_img_src) => {
+    try {
+      const obj = {
+        vendor_id: form.vendor_id,
+        product_id: editId,
+        product_gender: form.product_gender,
+        product_color: form.product_color,
+        product_size: form.product_size,
+        product_type: form.product_type,
+        category_id: form.category_id,
+        product_img_id: product_img_id
+      }
+      console.log("obj:",obj);
+      console.log("productImgPaths:",product_img_src);
+      
+      // Image update upload
+      const formData = new FormData();
+      if (singleImage) {
+        formData.append('image', singleImage[0])
+        formData.append('oldImagePath', product_img_src)
+      }
+      
+      updateProductImg(formData, obj)
+    } catch (error) {
+      console.log("error:",error);
+      
+    }
   }
   
   const confirmProduct = products.find(p => p.id === confirmId)
@@ -324,6 +354,7 @@ export default function Products() {
                       label="Choose Main Image"
                       loading={false}
                     />
+                    <button onClick={() => handleGalleryImage(e.product_img_id,e.product_img_src)}>Change</button>
                   </div>
                 ))
               }
@@ -336,21 +367,32 @@ export default function Products() {
               {
                   editImg &&
                 [...editImg].slice(1)?.map((e, i) => (
+                  <div 
+                     key={i}
+                  >
                   <img
-                    key={i}
                     width={100}
                     height={100}
                     src={`${BASE_URL}${e.product_img_src}`}
                   />
+                    <ImageUploader
+                      multiple={false}
+                      onChange={setSingleImage}
+                      title="1 only choose images"
+                      label="Choose Gallery Images"
+                      loading={false}
+                    />
+                    <button onClick={() => handleGalleryImage(e.product_img_id,e.product_img_src)}>Change</button>
+                  </div>
                 ))
               }
-              <ImageUploader
+              {/* <ImageUploader
                 multiple={true}
                 onChange={setMultiImages}
                 title="Minimum 2 or Maximum 5 choose images"
                 label="Choose Gallery Images"
                 loading={false}
-              />
+              /> */}
             </div>
           </div>
           <div style={{

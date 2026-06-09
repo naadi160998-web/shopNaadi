@@ -68,8 +68,8 @@ router.post(
       const {vendor_id,product_id,category_id} = req.params;
     
       const files = []
-      const single = req.files.single ? req.files.single.map(e => {return e.path.split("\\").slice(6).join("/")}) : false;
-      const multiple = req.files.multiple ? req.files.multiple.map(e => {return e.path.split("\\").slice(6).join("/")}) : false ;
+      const single = req.files.single ? req.files.single.map(e => {return e.path.split("\\").slice(8).join("/")}) : false;
+      const multiple = req.files.multiple ? req.files.multiple.map(e => {return e.path.split("\\").slice(8).join("/")}) : false ;
       // console.log("9********************single:",single);
       
       if(single){
@@ -156,7 +156,7 @@ router.put(
           return res.status(400).json({ message: "New image required" });
         }
 
-        const newImagePath = req.file.path.replace(/\\/g, "/").split("/").slice(6).join("/");
+        const newImagePath = req.file.path.replace(/\\/g, "/").split("/").slice(8).join("/");
         console.log("***********newImagePath:",newImagePath);
 
         if (!newImagePath) {
