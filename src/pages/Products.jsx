@@ -98,32 +98,11 @@ export default function Products() {
       setNextId(n => n + 1)
       dispatch(createProduct(form))
     } else {
-
       // update input fields
-
-      // setProducts(prev => prev.map(p => p.product_id === editId ? { ...p, ...form, price: parseFloat(form.new_price) || 0, stock: parseInt(form.product_stock) || 0 } : p))
-      // const obj = {
-      //   vendor_id: form.vendor_id,
-      //   product_id: editId,
-      //   product_gender: form.product_gender,
-      //   product_color: form.product_color,
-      //   product_size: form.product_size,
-      //   product_type: form.product_type,
-      //   category_id: form.category_id,
-      //   product_img_id: editImg[0]?.product_img_id
-      // }
-      // console.log("obj:",obj);
-      // console.log("productImgPaths:",editImg[0].product_img_src);
-      
-      // // Image update upload
-      // const formData = new FormData();
-      // if (singleImage) {
-      //   formData.append('image', singleImage[0])
-      //   formData.append('oldImagePath', editImg[0].product_img_src)
-      // }
-      
-      // updateProductImg(formData, obj)
-      // dispatch(updateProduct(editId, form))
+      console.log("form:",form);
+      setProducts(prev => [...prev, { product_id: editId, ...form, price: parseFloat(form.new_price) || 0, stock: parseInt(form.product_stock) || 0 }])
+      setNextId(n => n + 1)
+      dispatch(updateProduct(editId,form))
     }
     // closeModal() //nadimuthu, move this to image upload step
   }

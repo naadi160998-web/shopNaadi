@@ -38,7 +38,7 @@ export const getProducts = (vendor_id) => async (dispatch) => {
 
 export const updateProduct = (productId, productData) => async (dispatch) => {
     try {
-        //console.log("Updating product with ID:", productId, "and data:", productData);
+        console.log("Updating product with ID:", productId, "and data:", productData);
         const response = await axiosInstance.put(`/product/update/${productId}`, productData);
         dispatch(setProductId({
             productId: response.data
