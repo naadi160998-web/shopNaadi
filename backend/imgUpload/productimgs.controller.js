@@ -25,11 +25,11 @@ const storage = multer.diskStorage({
         "uploads",
         "products",
         vendor_id,
+        product_id,
         product_type,
         gender,
         color,
-        size,
-        product_id
+        size
       )
 
       createFolder(folderPaths)
@@ -92,15 +92,15 @@ router.post(
 
 router.post("/delete",async (req, res) => {
   try {
-    const { imagePath, product_id, vendor_id, product_img_id } =await req.body;
-    console.log("imagePath, product_id, vendor_id:",{imagePath, product_id, vendor_id, product_img_id});
+    const { product_img_src, product_id, vendor_id, product_img_id } =await req.body;
+    console.log("imagePath, product_id, vendor_id:",{product_img_src, product_id, vendor_id, product_img_id});
     
-    if (!imagePath) {
+    if (!product_img_src) {
       return res.status(400).json({ message: "Image path required" });
     }
 
     // 🔥 full system path
-    const fullPath = path.join(process.cwd(), imagePath);
+    const fullPath = path.join(process.cwd(), product_img_src);
 
     // ✅ 1. Delete file from folder
     if (fs.existsSync(fullPath)) {
@@ -115,7 +115,7 @@ router.post("/delete",async (req, res) => {
 
     // ✅ 2. Remove from DB
     const result = await productimgService.deleteImgPath(
-      { product_img_id, imagePath, product_id, vendor_id }
+      { product_img_id, product_img_src, product_id, vendor_id }
     );
 
     // console.log("result:",result);
@@ -123,7 +123,7 @@ router.post("/delete",async (req, res) => {
 
     res.json({
       message: "Image deleted successfully",
-      path: imagePath,
+      path: product_img_src,
     });
 
   } catch (error) {
@@ -163,12 +163,8 @@ router.put(
       return res.status(400).json({ message: "Image path required" });
     }
 
-        // 🔥 full system path
         const fullPath = path.join(process.cwd(), oldImagePath);
 
-        console.log("***************fullPath:",fullPath);
-        
-        // ✅ 1. Delete file from folder
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
           console.log("File deleted:", fullPath);
@@ -176,22 +172,9 @@ router.put(
           console.log("File not found:", fullPath);
         }
 
-        // call it
         removeEmptyFolders(path.dirname(fullPath));
         
-        // // 🔥 delete old image
-        // const oldFullPath = path.join(process.cwd(), oldImagePath);
-        // console.log("oldFullPath:",oldFullPath);
-        
-        // if (fs.existsSync(oldFullPath)) {
-        //   fs.unlinkSync(oldFullPath);
-        //   console.log("Old image deleted");
-        // }
-
-        // removeEmptyFolders(path.dirname(oldFullPath));
-
         const result = productimgService.updateProductImgs(newImagePath, vendor_id, product_id, product_img_id)
-        console.log("update result:",result);
 
         // res.json({
         //   message: "Image replaced successfully",

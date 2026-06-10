@@ -2,6 +2,7 @@ const db = require("../_helper/db");
 const multer = require("multer")
 const fs = require("fs")
 const path = require("path")
+const { Op } = require("sequelize");
 
 module.exports = {
     createProducts,
@@ -71,7 +72,7 @@ async function createProducts(params) {
 async function getProductUserId(params) {
     try {
         const userId = await params;
-        console.log("111111111111111userId:",userId);
+        // console.log("111111111111111userId:",userId);
         
         // const products = await db.Products.findAll({where: {vendor_id: parseInt(userId)}});
         const products = await db.Products.findAll({
@@ -86,7 +87,7 @@ async function getProductUserId(params) {
         
         if(products === undefined) throw new Error("Products not found");
         
-        console.log("Get products:",products)
+        // console.log("Get products:",products)
         return products;
         
     } catch (error) {
@@ -133,9 +134,68 @@ async function updateProducts(product,product_id) {
 }
 
 // deleteproducts
-async function deleteProducts(product_id,vendor_id) {
+async function deleteProducts(product_id,vendor_id,obj) {
     try {
+        // console.log("call  it");
         await db.Products.destroy({where:{product_id:Number(product_id),vendor_id:Number(vendor_id)}})
+        // console.log("obj:",obj);
+        
+        // Get image records
+        const images = await db.ProductImgSrc.findAll({
+            where: {
+                product_img_id: {
+                    [Op.in]: obj.imgIds,
+                },
+            },
+        });
+        // console.log("Found images:", images);
+        if (!images.length) {
+            return res.status(404).json({
+                success: false,
+                message: "Images not found",
+            });
+        }
+        
+        // Delete physical files
+        for (const img of images) {
+            
+            const filePath = path.join(
+                img.product_img_src
+            );
+
+            // console.log("filePath:",filePath);
+            
+            // console.log("fs.existsSync(filePath):",fs.existsSync(filePath));
+            
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        }
+
+        const imgIds = obj.imgIds
+        
+        await db.ProductImgSrc.destroy({
+            where: {
+                product_img_id: {
+                    [Op.in]:imgIds
+                }
+            }
+        })
+
+        const folderPaths = path.join(
+            process.cwd(),
+            "uploads",
+            "products",
+            vendor_id,
+            product_id
+        );
+        // console.log("*****************folder path:", folderPaths);
+        const path1 = folderPaths.split("\\").join("/");
+        // console.log("path:", path1);
+        fs.rmSync(folderPaths, {
+            recursive: true,
+            force: true,
+        });
         return {completed:true}
     } catch (error) {
         return {completed:false}

@@ -2,6 +2,8 @@ const express = require("express")
 const router = express.Router();
 const productService = require("./product.service");
 const auth = require("../_Auth/auth")
+const fs = require("fs")
+const path = require("path")
 
 // routes
 // router.post("/",auth,createProducts)
@@ -12,7 +14,8 @@ router.get("/:id",auth,findById)
 router.get("/",auth,getAllProducts)
 // router.post("/update/:id",auth,updateProduct)
 router.put("/update/:id",updateProduct)
-router.delete("/delete/:product_id/:vendor_id",auth,deleteProducts)
+// router.delete("/delete/:product_id/:vendor_id",auth,deleteProducts)
+router.post("/delete/:product_id/:vendor_id",deleteProducts)
 
 module.exports = router
 
@@ -33,7 +36,7 @@ async function getProductUserId(req,res,next) {
     try {
         // console.log("***************id:",req.params.id);
         const id = await req.params.id
-        console.log("***************id:",id);
+        // console.log("***************id:",id);
         
         const result = await productService.getProductUserId(Number(id))
         // console.log("9999999999999999999999result:",JSON.stringify(result));
@@ -68,8 +71,12 @@ async function updateProduct(req,res,next) {
 }
 async function deleteProducts(req,res,next) {
     try {
+        console.log("req.params:",req.params);
+        
         const {product_id,vendor_id} = await req.params
-        const result = await productService.deleteProducts(product_id,vendor_id);
+        const objs = await req.body
+        const result = await productService.deleteProducts(product_id,vendor_id,objs);
+        // console.log("imgIds:",imgIds);
         return res.json(result);
     } catch (error) {
         console.log("error:",error);

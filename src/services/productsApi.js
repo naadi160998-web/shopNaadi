@@ -1,6 +1,6 @@
 import axiosInstance from "../API/axiosInstance";
 import { setProductsImages } from "../features/productImageSlice";
-import { setProductId, setProducts } from "../features/productSlice";
+import { setProductId, setProducts,removeProductId } from "../features/productSlice";
 
 export const createProduct = (productData) => async (dispatch) => {
     try {
@@ -49,6 +49,22 @@ export const updateProduct = (productId, productData) => async (dispatch) => {
         throw error;
     }
 };
+// export const deleteProduct = (product_id,vendor_id) => async (dispatch) => {
+export const deleteProduct = (product_id,vendor_id,imgIds,data) => async (dispatch) => {
+    console.log("call it:",product_id,vendor_id,imgIds);
+    const obj = {
+        imgIds:imgIds,
+        imgsData:data
+    }
+    try {
+        const response = await axiosInstance.post(`/product/delete/${product_id}/${vendor_id}`,obj);
+        // dispatch(removeProductId())
+        return response.data;
+    } catch (error) {
+        console.error("Error creating product:", error);
+        throw error;
+    }
+};
 
 // **********************image upload*************************//
 export const uploadProductImg = (formData, params) => async (dispatch) => {
@@ -85,16 +101,12 @@ export const uploadProductImg = (formData, params) => async (dispatch) => {
     }
 };
 
-export const deleteProductImg = async (imgPath) => {
-    const data = {
-        imagePath: imgPath,
-        product_id: 1255,
-        vendor_id: 6
-    }
+export const deleteProductImg = async (data) => {
+    
     try {
         const res = await axiosInstance.post(`/uploads/delete`, data);
 
-        //console.log(res.data);
+        console.log(res.data);
     } catch (err) {
         console.error(err);
     }

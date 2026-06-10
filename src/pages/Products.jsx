@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { initialProducts, CATEGORIES, PRODUCT_EMOJIS } from '../data/mockData'
 import Modal from '../components/Modal'
 import ConfirmDialog from '../components/ConfirmDialog'
-import { createProduct, getProducts, updateProduct, updateProductImg, uploadProductImg } from '../services/productsApi'
+import { createProduct, getProducts, updateProduct, updateProductImg, uploadProductImg,deleteProductImg,deleteProduct } from '../services/productsApi'
 import { useDispatch, useSelector } from 'react-redux'
 import ImageUploader from '../components/ImageUploader'
 import { removeProductId } from '../features/productSlice'
@@ -107,8 +107,13 @@ export default function Products() {
     // closeModal() //nadimuthu, move this to image upload step
   }
 
-  const handleDelete = () => {
-    setProducts(prev => prev.filter(p => p.id !== confirmId))
+  const handleDelete = (e) => {
+    console.log(e);
+    const imgIds = e.productimgs.map((e)=>e.product_img_id).reverse()
+    console.log("imgIds:",imgIds);
+    
+    dispatch(deleteProduct(e.product_id,e.vendor_id,imgIds,e))
+    setProducts(prev => prev.filter(p => p.product_id !== confirmId))
     setConfirmId(null)
   }
 
@@ -152,7 +157,7 @@ export default function Products() {
   }
 
   // handle single by single update image gallery
-  const handleGalleryImage = (product_img_id,product_img_src) => {
+  const handleImageUpdate = (product_img_id,product_img_src) => {
     try {
       const obj = {
         vendor_id: form.vendor_id,
@@ -180,9 +185,16 @@ export default function Products() {
       
     }
   }
-  
-  const confirmProduct = products.find(p => p.id === confirmId)
 
+  // handle single buy single delete image gallery
+  const handleImageDelete = (e) => {
+    // console.log("obj:",e);
+    deleteProductImg(e);
+  }
+  
+  const confirmProduct = products.find(p => p.product_id === confirmId)
+  // console.log("confirmProduct:",confirmProduct);
+  
   return (
     <div>
       <Header 
@@ -333,7 +345,8 @@ export default function Products() {
                       label="Choose Main Image"
                       loading={false}
                     />
-                    <button onClick={() => handleGalleryImage(e.product_img_id,e.product_img_src)}>Change</button>
+                    <button onClick={() => handleImageUpdate(e.product_img_id,e.product_img_src)}>Change</button>
+                    <button onClick={()=>handleImageDelete(e)}>Delete</button>
                   </div>
                 ))
               }
@@ -361,17 +374,11 @@ export default function Products() {
                       label="Choose Gallery Images"
                       loading={false}
                     />
-                    <button onClick={() => handleGalleryImage(e.product_img_id,e.product_img_src)}>Change</button>
+                    <button onClick={() => handleImageUpdate(e.product_img_id,e.product_img_src)}>Change</button>
+                    <button onClick={()=>handleImageDelete(e)}>Delete</button>
                   </div>
                 ))
               }
-              {/* <ImageUploader
-                multiple={true}
-                onChange={setMultiImages}
-                title="Minimum 2 or Maximum 5 choose images"
-                label="Choose Gallery Images"
-                loading={false}
-              /> */}
             </div>
           </div>
           <div style={{
@@ -418,7 +425,7 @@ export default function Products() {
         <ConfirmDialog
           message="Are you sure you want to delete"
           name={confirmProduct?.product_name}
-          onConfirm={handleDelete}
+          onConfirm={(()=>handleDelete(confirmProduct))}
           onCancel={() => setConfirmId(null)}
         />
       )}
