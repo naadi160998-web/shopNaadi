@@ -21,6 +21,8 @@ app.use("/vendor",require("./vendors/vendors.controller"))
 app.use("/notification",require("./notification/notification.controller"))
 app.use("/category",require("./Category/Category.controller"))
 app.use("/warehouses",require("./warehouse/warehouse.controller"))
+app.use("/stocks",require("./stocks/stocks.controller"))
+app.use("/stock_logs",require("./stock_logs/stock_logs.controller"))
 
 // temporary added
 app.use("/userss",require("./SimpleProducts/SimpleProducts.controller"))

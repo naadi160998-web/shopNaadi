@@ -62,9 +62,9 @@ async function updateWarehouses(warehouse,warehouse_id) {
     try {
         const items = await warehouse;
         await db.Warehouses.update(items,{where:{warehouse_id:warehouse_id}})
-        return {data: items,msg:"Product updated successfully"}
+        return {data: items,msg:"Warehouse updated successfully"}
     } catch (error) {
-        return {data: error,msg:"Failed to update product"}
+        return {data: error,msg:"Failed to update warehouse"}
     }
 }
 
