@@ -6,7 +6,8 @@ const Header = ({
     search,
     setSearch,
     openAdd,
-    description
+    description,
+    btnName
 }) => {
     return (
         <div className="topbar">
@@ -19,7 +20,7 @@ const Header = ({
                     <div className="topbar-actions">
                 <input className="search-input" placeholder="🔍 Search..." value={search}
                     onChange={e => setSearch(e.target.value)} />
-                <button className="btn-primary" onClick={openAdd}>＋ Add Product</button>
+                <button className="btn-primary" onClick={openAdd}>＋ Add {btnName}</button>
             </div>
                 )
             }

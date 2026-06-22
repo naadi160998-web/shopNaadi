@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import productsReducer from "../features/productSlice"
 import productImageReducer from "../features/productImageSlice"
+import warehousesReducer from "../features/warehousesSlice"
 
 import { 
     persistStore, 
@@ -15,16 +16,18 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage"
 import { combineReducers } from "@reduxjs/toolkit";
+import Warehouses from "../pages/Warehouses";
 
 const rootReducer = combineReducers({
     products:productsReducer,
-    productImages:productImageReducer
+    productImages:productImageReducer,
+    warehouses: warehousesReducer
 })
 
 const persistConfig = {
     key:"root",
     storage,
-    whiteList:["products","productImages"]
+    whiteList:["products","productImages","warehouses"]
 }
 
 const persistedReducer = persistReducer(persistConfig,rootReducer);

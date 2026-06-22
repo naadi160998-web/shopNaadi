@@ -204,6 +204,7 @@ export default function Products() {
           openAdd={openAdd}
           actions={true}
           description="Manage your product listings, edit details, and track inventory levels."
+          btnName={"Products"}
       />      
 
       {filtered.length === 0 && (
