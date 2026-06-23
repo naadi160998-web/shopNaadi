@@ -1,12 +1,14 @@
 const db = require("../_helper/db");
 const { Op } = require("sequelize");
+const { QueryTypes } = require("sequelize");
 
 module.exports = {
     createStocks,
     updateStocks,
     deleteStocks,
     getAllStocks,
-    findById
+    findById,
+    getStocks
 }
 
 // create
@@ -62,6 +64,11 @@ async function getAllStocks() {
 async function updateStocks(stocks,stock_id) {
     try {
         const items = await stocks;
+        const quantity = Number(items.quantity)
+        const stock = await db.Stocks.findOne({where:{stock_id:stock_id}})
+        console.log("***************stock:",stock);
+        if(!stock) return {data: null,msg:"stock_id not found"}
+        items.quantity = stock.quantity + quantity
         await db.Stocks.update(items,{where:{stock_id:stock_id}})
         return {data: items,msg:"stock_id updated successfully"}
     } catch (error) {
@@ -77,5 +84,16 @@ async function deleteStocks(stock_id) {
         return {completed:true}
     } catch (error) {
         return {completed:false}
+    }
+}
+
+async function getStocks() {
+    try {
+        // const query = "SELECT s.stock_id, p.product_name,w.warehouse_name,s.quantity FROM stocks s INNER JOIN products p ON s.product_id = p.product_id INNER JOIN warehouses w ON s.warehouse_id = w.warehouse_id";
+        const stocks = await db.sequelize.query("SELECT s.stock_id, p.product_name,w.warehouse_name,s.quantity FROM stocks s INNER JOIN products p ON s.product_id = p.product_id INNER JOIN warehouses w ON s.warehouse_id = w.warehouse_id", { type: QueryTypes.SELECT });
+        return stocks;
+    } catch (error) {
+        console.error("Error fetching stocks:", error);
+        throw new Error("Failed to fetch stocks");
     }
 }

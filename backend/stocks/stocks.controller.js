@@ -6,13 +6,14 @@ const auth = require("../_Auth/auth")
 // routes
 // router.post("/",auth,createStocks)
 router.post("/",createStocks)
-router.get("/:id",auth,findById)
+// router.get("/:id",auth,findById)
 // router.get("/",auth,getAllStocks)
 router.get("/",getAllStocks)
 // router.post("/update/:id",auth,updateStocks)
 router.put("/update/:id",updateStocks)
 // router.delete("/delete/:product_id/:vendor_id",auth,deleteStocks)
 router.post("/delete/:stock_id",deleteStocks)
+// router.get("/getstocks",getStocks)
 
 module.exports = router
 
@@ -42,7 +43,7 @@ async function updateStocks(req,res,next) {
         
         const data = await req.body
         const stock_id = await req.params.id
-        const result = await stockService.updateStockss(data,stock_id)
+        const result = await stockService.updateStocks(data,stock_id)
         return res.json(result);
     } catch (error) {
         console.log("error:",error);
@@ -69,6 +70,16 @@ async function findById(req,res,next) {
         console.log("********id****************:",req.params);
         const id = await req.params.id
         const result = await stockService.findById(id)
+        return res.json(result)
+    } catch (error) {
+        console.log("error:",error);
+        return res.json(error)
+    }
+}
+
+async function getStocks(req,res,next) {
+    try {
+        const result = await stockService.getStocks()
         return res.json(result)
     } catch (error) {
         console.log("error:",error);
