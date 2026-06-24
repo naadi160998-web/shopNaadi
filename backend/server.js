@@ -27,6 +27,12 @@ app.use("/orders",require("./orders/orders.controller"))
 app.use("/orderItems",require("./order_items/order_items.controller"))
 app.use("/suppliers",require("./suppliers/suppliers.controller"))
 app.use("/purchase_orders",require("./purchase_orders/purchase_orders.controller"))
+app.use("/cart",require("./cart/cart.controller"))
+app.use("/wishlist",require("./wishlist/wishlist.controller"))
+app.use("/payment",require("./payment/payment.controller"))
+app.use("/returnProduct",require("./return_product/return_product.controller"))
+app.use("/refunds",require("./refunds/refunds.controller"))
+
 // temporary added
 app.use("/userss",require("./SimpleProducts/SimpleProducts.controller"))
 app.use("/uploads",express.static("uploads"))

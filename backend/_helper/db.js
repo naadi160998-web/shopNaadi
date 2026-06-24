@@ -36,6 +36,11 @@ async function initialize() {
     db.OrderItems = require("../order_items/order_items.model")(sequelize);
     db.Suppliers = require("../suppliers/suppliers.model")(sequelize)
     db.Purchase_Orders = require("../purchase_orders/purchase_orders.model")(sequelize)
+    db.Cart = require("../cart/cart.model")(sequelize)
+    db.Wishlist = require("../wishlist/wishlist.model")(sequelize)
+    db.Payment = require("../payment/payment.model")(sequelize)
+    db.Return_Product = require("../return_product/return_product.model")(sequelize)
+    db.Refunds = require("../refunds/refunds.model")(sequelize)
 
     // products relations
     db.Products.belongsTo(db.Suppliers,{foreignKey: 'supplier_id', as: 'suppliers'})
@@ -73,6 +78,21 @@ async function initialize() {
     db.Purchase_Orders.belongsTo(db.Suppliers,{foreignKey: 'supplier_id', as: 'suppliers_Purchase_Orders'})
     db.Purchase_Orders.belongsTo(db.Warehouses,{foreignKey: 'warehouse_id', as: 'purchase_orders_warehouses'})
 
+    // Cart
+    db.Cart.belongsTo(db.Products,{foreignKey: 'product_id', as: 'cart_products'})
+
+    // Wishlist
+    db.Wishlist.belongsTo(db.Products,{foreignKey: 'product_id', as: 'wishlist_products'})
+    
+    // Payment
+    db.Payment.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'payment_orders'})
+
+    // Return_Product
+    db.Return_Product.belongsTo(db.OrderItems,{foreignKey: 'order_items_id', as: 'return_product_order_items_id'})
+
+    // Refunds
+    db.Refunds.belongsTo(db.Return_Product,{foreignKey: 'return_id', as: 'Refunds_Return_Product'})
+    db.Refunds.belongsTo(db.Payment,{foreignKey: 'payment_id', as: 'Refunds_payment_id'})
     // sync all models with database
     await sequelize.sync({alter: false});
 }
