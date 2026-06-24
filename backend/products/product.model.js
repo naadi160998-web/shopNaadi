@@ -53,6 +53,10 @@ function model(sequelize){
             type: DataTypes.STRING,
             allowNull:true
         },
+        supplier_id:{
+            type:DataTypes.INTEGER,
+            allowNull:true
+        },
         vendor_id:{
             type: DataTypes.INTEGER,
             allowNull:true

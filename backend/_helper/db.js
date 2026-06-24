@@ -32,8 +32,13 @@ async function initialize() {
     db.Stocks = require("../stocks/stocks.model")(sequelize);
     db.Warehouses = require("../warehouse/warehouse.model")(sequelize);
     db.Stock_Logs = require("../stock_logs/stock_logs.model")(sequelize);
+    db.Orders = require("../orders/orders.model")(sequelize);
+    db.OrderItems = require("../order_items/order_items.model")(sequelize);
+    db.Suppliers = require("../suppliers/suppliers.model")(sequelize)
+    db.Purchase_Orders = require("../purchase_orders/purchase_orders.model")(sequelize)
 
     // products relations
+    db.Products.belongsTo(db.Suppliers,{foreignKey: 'supplier_id', as: 'suppliers'})
     db.Products.belongsTo(db.Vendors,{foreignKey: 'vendor_id', as: 'user'})
     db.Products.belongsTo(db.Categories,{foreignKey: 'category_id', as: 'categories'})
     
@@ -59,7 +64,15 @@ async function initialize() {
 
     // warehouses
     db.Warehouses.belongsTo(db.Products,{foreignKey: 'product_id', as: 'warehouses_products'})
-    
+
+    // order_items
+    db.OrderItems.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'order_items_order'})
+    db.OrderItems.belongsTo(db.Products,{foreignKey: 'product_id', as: 'order_items_products'})
+
+    // Purchase_Orders
+    db.Purchase_Orders.belongsTo(db.Suppliers,{foreignKey: 'supplier_id', as: 'suppliers_Purchase_Orders'})
+    db.Purchase_Orders.belongsTo(db.Warehouses,{foreignKey: 'warehouse_id', as: 'purchase_orders_warehouses'})
+
     // sync all models with database
     await sequelize.sync({alter: false});
 }

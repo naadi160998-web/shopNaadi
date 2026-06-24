@@ -23,7 +23,7 @@ async function uploadProductImgs(params) {
 // create
 async function createProducts(params) {
     try {
-        const {product_name,product_desc,product_stock,old_price,product_dealer,product_discount,product_size,new_price,product_type,product_gender,product_color,vendor_id,category_id} = await params;
+        const {product_name,product_desc,product_stock,old_price,product_dealer,product_discount,product_size,new_price,product_type,product_gender,product_color,supplier_id,vendor_id,category_id} = await params;
         
         const product = {
             product_name: product_name,
@@ -37,6 +37,7 @@ async function createProducts(params) {
             product_type: product_type,
             product_gender: product_gender,
             product_color: product_color,
+            supplier_id:supplier_id,
             vendor_id: vendor_id,
             category_id:category_id
         }

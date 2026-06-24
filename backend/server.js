@@ -23,7 +23,10 @@ app.use("/category",require("./Category/Category.controller"))
 app.use("/warehouses",require("./warehouse/warehouse.controller"))
 app.use("/stocks",require("./stocks/stocks.controller"))
 app.use("/stock_logs",require("./stock_logs/stock_logs.controller"))
-
+app.use("/orders",require("./orders/orders.controller"))
+app.use("/orderItems",require("./order_items/order_items.controller"))
+app.use("/suppliers",require("./suppliers/suppliers.controller"))
+app.use("/purchase_orders",require("./purchase_orders/purchase_orders.controller"))
 // temporary added
 app.use("/userss",require("./SimpleProducts/SimpleProducts.controller"))
 app.use("/uploads",express.static("uploads"))
