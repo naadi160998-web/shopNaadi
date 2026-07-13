@@ -18,6 +18,10 @@ function model(sequelize){
             type:DataTypes.INTEGER,
             allowNull:true
         },
+        date:{
+            type:DataTypes.STRING,
+            allowNull:true,
+        },
         total_amount:{
             type:DataTypes.INTEGER,
             allowNull:true

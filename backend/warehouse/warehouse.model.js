@@ -13,6 +13,10 @@ function model(sequelize){
             type: DataTypes.INTEGER,
             allowNull:true
         },
+        qty:{
+            type: DataTypes.INTEGER,
+            allowNull:true
+        },
         warehouse_name:{
             type: DataTypes.STRING,
             allowNull:true

@@ -10,11 +10,11 @@ const warehousesSlice = createSlice({
     initialState,
     reducers:{
         setWarehouses:(state,action)=>{
-            console.log("actions:",action.payload);
+            // console.log("actions:",action.payload);
             state.warehouseData = action.payload.warehouseData
         },
         setWarehousesId:(state,action)=>{
-            console.log("actions:",action.payload.productId.data);
+            // console.log("actions:",action.payload.productId.data);
             state.warehouseId = action.payload.warehouseId.data
         },
         removeWarehousesId:(state)=>{

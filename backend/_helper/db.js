@@ -29,7 +29,6 @@ async function initialize() {
     db.Vendors = require("../vendors/vendors.model")(sequelize);
     // db.Notification = require("../notification/notification.model")(sequelize);
     db.Categories = require("../Category/Category.model")(sequelize);
-    db.Stocks = require("../stocks/stocks.model")(sequelize);
     db.Warehouses = require("../warehouse/warehouse.model")(sequelize);
     db.Stock_Logs = require("../stock_logs/stock_logs.model")(sequelize);
     db.Orders = require("../orders/orders.model")(sequelize);
@@ -54,22 +53,21 @@ async function initialize() {
     db.Products.hasMany(db.ProductImgSrc,{foreignKey: 'product_id',as: 'productimgs'})
     // user
     db.Users.belongsTo(db.Role,{foreignKey: 'role_id',as:"role"})
-    
+
     // Vendor
     db.Vendors.belongsTo(db.Role,{foreignKey: 'role_id',as:"role"})
 
-    // stock
-    db.Stocks.belongsTo(db.Products,{foreignKey: 'product_id', as: 'stock_products'})
-    db.Stocks.belongsTo(db.Warehouses,{foreignKey: 'warehouse_id', as: 'stock_warehouses'})
-
     // stock_logs
-    db.Stock_Logs.belongsTo(db.Stocks,{foreignKey: 'stock_id', as: 'stock_logs_stock_id'})
     db.Stock_Logs.belongsTo(db.Products,{foreignKey: 'product_id', as: 'stock_logs_products'})
     db.Stock_Logs.belongsTo(db.Warehouses,{foreignKey: 'warehouse_id', as: 'stock_logs_warehouses'})
 
     // warehouses
     db.Warehouses.belongsTo(db.Products,{foreignKey: 'product_id', as: 'warehouses_products'})
+    // db.Warehouses.hasMany(db.Products,{foreignKey: 'product_id',as: 'warehouses_products'})
 
+    // Orders
+    db.Orders.belongsTo(db.Customers,{foreignKey: 'customer_id', as: 'Orders_customer_id'})
+    
     // order_items
     db.OrderItems.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'order_items_order'})
     db.OrderItems.belongsTo(db.Products,{foreignKey: 'product_id', as: 'order_items_products'})

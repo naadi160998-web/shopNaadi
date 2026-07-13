@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { orders as initialOrders } from '../data/mockData'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Modal from '../components/Modal'
+import { useDispatch, useSelector } from 'react-redux'
+import { getOrders } from '../services/orderApi'
 
 const STATUS_OPTIONS = ['Delivered','Processing','Pending','Cancelled']
 
@@ -16,22 +18,32 @@ const allInitial = [
 ]
 
 export default function Orders() {
-  const [orders, setOrders] = useState(allInitial)
+
+  const orderDatas = useSelector(state => state.orders.orderData)
+  console.log("orderDatas:",orderDatas);
+
+  const dispatch = useDispatch()
+
+  const [orders, setOrders] = useState(orderDatas)
   const [confirmId, setConfirmId] = useState(null)
   const [editOrder, setEditOrder] = useState(null)
   const [editStatus, setEditStatus] = useState('')
 
-  const openEdit = o => { setEditOrder(o); setEditStatus(o.status) }
-  const saveEdit = () => {
-    setOrders(prev => prev.map(o => o.id === editOrder.id ? { ...o, status: editStatus } : o))
-    setEditOrder(null)
-  }
-  const handleDelete = () => {
-    setOrders(prev => prev.filter(o => o.id !== confirmId))
-    setConfirmId(null)
-  }
+  // const openEdit = o => { setEditOrder(o); setEditStatus(o.status) }
+  // const saveEdit = () => {
+  //   setOrders(prev => prev.map(o => o.id === editOrder.id ? { ...o, status: editStatus } : o))
+  //   setEditOrder(null)
+  // }
+  // const handleDelete = () => {
+  //   setOrders(prev => prev.filter(o => o.id !== confirmId))
+  //   setConfirmId(null)
+  // }
 
-  const confirmOrder = orders.find(o => o.id === confirmId)
+  // const confirmOrder = orders.find(o => o.id === confirmId)
+
+  useEffect(()=>{
+    dispatch(getOrders())
+  },[dispatch])
 
   return (
     <div>
@@ -57,12 +69,12 @@ export default function Orders() {
           <table className="customers-table">
             <thead><tr><th>Order ID</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
-              {orders.map(o=>(
-                <tr key={o.id}>
-                  <td style={{color:'var(--text-light)',fontWeight:700}}>{o.id}</td>
-                  <td style={{fontWeight:700}}>{o.customer}</td>
+              {orders.map((o,i)=>(
+                <tr key={i}>
+                  <td style={{color:'var(--text-light)',fontWeight:700}}>{o.order_id}</td>
+                  <td style={{fontWeight:700}}>{o.customer_id}</td>
                   <td style={{color:'var(--text-light)'}}>{o.date}</td>
-                  <td style={{fontWeight:800}}>${o.amount.toFixed(2)}</td>
+                  <td style={{fontWeight:800}}>${o.total_amount.toFixed(2)}</td>
                   <td><span className={getOrderClass(o.status)}>{o.status}</span></td>
                   <td>
                     <div className="action-btns">

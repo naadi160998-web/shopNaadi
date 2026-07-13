@@ -10,11 +10,11 @@ const productSlice = createSlice({
     initialState,
     reducers:{
         setProducts:(state,action)=>{
-            console.log("actions:",action.payload);
+            // console.log("actions:",action.payload);
             state.productsData = action.payload.productsData
         },
         setProductId:(state,action)=>{
-            console.log("actions:",action.payload.productId.data);
+            // console.log("actions:",action.payload.productId.data);
             state.productId = action.payload.productId.data
         },
         removeProductId:(state)=>{

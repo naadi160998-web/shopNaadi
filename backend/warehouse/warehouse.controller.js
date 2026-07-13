@@ -42,7 +42,7 @@ async function updateWarehouses(req,res,next) {
         
         const data = await req.body
         const warehouse_id = await req.params.id
-        const result = await warehouseService.updateWarehousess(data,warehouse_id)
+        const result = await warehouseService.updateWarehouses(data,warehouse_id)
         return res.json(result);
     } catch (error) {
         console.log("error:",error);

@@ -6,6 +6,7 @@ const auth = require("../_Auth/auth")
 // routes
 // router.post("/",auth,createStockLogs)
 router.post("/",createOrders)
+router.get("/",getAllOrders)
 
 module.exports = router
 
@@ -16,6 +17,16 @@ async function createOrders(req,res,next) {
         console.log("****************data*****************:",data);
         
         const result = await ordersService.createOrders(data);
+        return res.json(result)
+    } catch (error) {
+        return res.json(error)
+    }
+}
+
+async function getAllOrders(req,res,next) {
+    try {
+
+        const result = await ordersService.getAllOrders();
         return res.json(result)
     } catch (error) {
         return res.json(error)

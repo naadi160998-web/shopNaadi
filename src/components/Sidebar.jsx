@@ -9,7 +9,7 @@ const navItems = [
   { to: '/orders', label: 'Orders', icon: '🛒', badge: 12 },
   { to: '/invoices', label: 'Invoices', icon: '📋' },
   { to: '/customers', label: 'Customers', icon: '👥' },
-  { to: '/notifications', label: 'Notifications', icon: '🔔', badge: 3 },
+  // { to: '/notifications', label: 'Notifications', icon: '🔔', badge: 3 },
   { to: '/settings', label: 'Settings', icon: '⚙️', chevron: true },
 ]
 

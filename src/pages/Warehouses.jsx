@@ -11,13 +11,16 @@ import Header from '../components/Header'
 const emptyForm = {
   warehouse_name: "",
   city: "",
+  qty:0,
   product_id:0
 }
 
 const Warehouses = () => {
 
   const warehouseDatas = useSelector(state => state.warehouses.warehouseData)
-  console.log("warehouseDatas:",warehouseDatas);
+  const productDatas = useSelector(state => state.products.productsData)
+  // console.log("warehouseDatas:",warehouseDatas);
+  // console.log("productDatas:",productDatas);
   
   // const warehouseDatas = []
   const [warehouses, setWarehouses] = useState(!warehouseDatas ? [] : warehouseDatas) // Start with empty list for testing add functionality
@@ -35,24 +38,25 @@ const Warehouses = () => {
   }, [dispatch])
 
   const filtered = warehouses.filter(p =>
-    p.warehouse_name.toLowerCase().includes(search.toLowerCase()) ||
-    p.city.toLowerCase().includes(search.toLowerCase())
+    p.warehouse_name !== undefined && p.warehouse_name.toLowerCase().includes(search.toLowerCase()) ||
+    p.city !== undefined && p.city.toLowerCase().includes(search.toLowerCase())
   )
 
   const openAdd = () => { 
     setForm(emptyForm); setModal('add') 
-    dispatch(removeProductId())
+    dispatch(deleteWarehouse())
   }
   const openEdit = w => {
     
     setForm({
       warehouse_name: w.warehouse_name,
       city: w.city,
+      qty:w.qty,
       product_id: w.product_id
     }); 
     setEditId(w.warehouse_id); 
     setModal('edit'); 
-    console.log("edit img:",w);
+    // console.log("edit img:",w);
     
   }
   const closeModal = () => { setModal(null); setEditId(null) }
@@ -62,21 +66,39 @@ const Warehouses = () => {
     if (!form.warehouse_name.trim()) return
 
     if (modal === 'add') {
-      setWarehouses(prev => [...prev, { warehouse_id: nextId, ...form}])
-      setNextId(n => n + 1)
-      dispatch(createWarehouse(form))
+      console.log("save form:",form);
+      form.product_id = parseInt(form.product_id)
+      form.qty = parseInt(form.qty)
+      // setWarehouses(prev => [...prev, { warehouse_id: nextId, ...form}])
+      // setNextId(n => n + 1)
+      createWarehouse(form).then(res => {
+        if (res.status === 401) {
+          closeModal()
+        }
+      })
     } else {
       // update input fields
       console.log("form:",form);
-      setWarehouses(prev => [...prev, { warehouse_id: editId, ...form}])
-      setNextId(n => n + 1)
-      dispatch(updateWarehouse(editId,form))
+      form.product_id = parseInt(form.product_id)
+      form.qty = parseInt(form.qty)
+      // setWarehouses(prev => [...prev, { warehouse_id: editId, ...form}])
+      // setNextId(n => n + 1)
+      updateWarehouse(editId,form).then(res => {
+        if(res.status === 400){
+          closeModal()
+        }
+      })
+      // closeModal()
     }
     // closeModal() //nadimuthu, move this to image upload step
   }
 
   const handleDelete = (e) => {
-    dispatch(deleteWarehouse(e.warehouse_id))
+    deleteWarehouse(e.warehouse_id).then(res => {
+      if(res.status === 400){
+        alert("Deleted Successfully")
+      }
+    })
     setWarehouses(prev => prev.filter(w => w.warehouse_id !== confirmId))
     setConfirmId(null)
   }
@@ -86,6 +108,11 @@ const Warehouses = () => {
     ////console.log("finish");
     dispatch(removeWarehousesId())
     closeModal()
+  }
+
+  const productName = (pid) =>{
+    const findProductName = productDatas.find(e => e.product_id === pid)
+    return findProductName.product_name
   }
   
   const confirmWarehouse = warehouses.find(w => w.warehouse_id === confirmId)
@@ -110,13 +137,13 @@ const Warehouses = () => {
       )}
 
       <div className="products-grid">
-        {filtered.map(w => (
-          <div key={w.warehouse_id} className="product-card">
+        {filtered.map((w,i) => (
+          <div key={i} className="product-card">
             <div className="product-emoji">{w.emoji}</div>
             <div className="product-info">
               <div className="product-name">{w.warehouse_name}</div>
               <div className="product-name">{w.city}</div>
-              <div className="product-name">{w.product_id}</div>
+              <div className="product-name">{productName(w.product_id)}</div>
               <div className="action-btns" style={{ marginTop: 10 }}>
                 <button className="btn-edit" onClick={() => openEdit(w)}>✏️ Edit</button>
                 <button className="btn-danger" onClick={() => setConfirmId(w.warehouse_id)}>🗑 Delete</button>
@@ -128,7 +155,7 @@ const Warehouses = () => {
 
       {modal && (
         <Modal
-          title={modal === 'add' ? 'Add New Product' : 'Edit Product'}
+          title={modal === 'add' ? 'Add New Warehouse' : 'Edit Warehouse'}
           onClose={closeModal}
           footer={<>
             <button className="btn-outline" onClick={closeModal}>Cancel</button>
@@ -136,18 +163,32 @@ const Warehouses = () => {
             }</button>
           </>}
         >
-          <div style={{ 
-            display: warehouse_id !== undefined ? "none" : "block" 
-          }}>
+          <div>
             <div className="form-group">
-              <label className="form-label">Warehouse Name</label>
+              <label className="form-label">Product</label>
+              <select className="form-select" value={form.product_id} onChange={e => setForm(f => ({ ...f, product_id:e.target.value}))}>
+                <option value={null}>Select products</option>
+                {
+                  productDatas.map((p,i) =>(
+                    <option key={i} value={p.product_id}>{p.product_name}</option>
+                  ))
+                }
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Name</label>
               <input className="form-input" placeholder="e.g. Naadi, TCS, APPLE" value={form.warehouse_name}
                 onChange={e => setForm(f => ({ ...f, warehouse_name: e.target.value }))} />
             </div>
             <div className="form-group">
-              <label className="form-label">Warehouse City</label>
+              <label className="form-label">City</label>
               <input className="form-input" placeholder="e.g. Chennai,Mumbai" value={form.city}
                 onChange={e => setForm(f => ({ ...f, city: e.target.value }))} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Product Quantity</label>
+              <input className="form-input" placeholder="0" value={form.qty}
+                onChange={e => setForm(f => ({ ...f, qty: e.target.value }))} />
             </div>
           </div>
         </Modal>
