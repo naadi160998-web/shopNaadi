@@ -23,12 +23,12 @@ async function uploadProductImgs(params) {
 // create
 async function createProducts(params) {
     try {
-        const {product_name,product_desc,product_stock,old_price,product_dealer,product_discount,product_size,new_price,product_type,product_gender,product_color,supplier_id,vendor_id,category_id} = await params;
+        const {product_name,product_desc,product_brand,old_price,product_dealer,product_discount,product_size,new_price,product_type,product_gender,product_color,supplier_id,vendor_id,category_id} = await params;
         
         const product = {
             product_name: product_name,
             product_desc: product_desc,
-            product_stock: product_stock,
+            product_brand: product_brand,
             old_price: old_price,
             product_dealer: product_dealer,
             product_discount: product_discount,
@@ -42,7 +42,7 @@ async function createProducts(params) {
             category_id:category_id
         }
 
-        console.log("***************products:",product);
+        // console.log("***************products:",product);
         if(!product) return {completed: false, msg:"Values isn't found"}
 
         // folder create

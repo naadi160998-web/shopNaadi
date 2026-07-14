@@ -116,7 +116,8 @@ export default function Customers() {
             <thead><tr>
               <th>Customer Details</th><th>Status</th>
               <th>Total Spend</th><th>Orders</th>
-              <th>Last Activity</th><th>Actions</th>
+              <th>Last Activity</th>
+              {/* <th>Actions</th> */}
             </tr></thead>
             <tbody>
               {paged.length === 0 && (
@@ -137,12 +138,12 @@ export default function Customers() {
                   <td style={{fontWeight:800}}>${c.totalSpend.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
                   <td style={{fontWeight:800}}>{c.orders}</td>
                   <td style={{color:'var(--text-light)',fontWeight:600}}>{c.lastActivity}</td>
-                  <td>
+                  {/* <td>
                     <div className="action-btns">
                       <button className="btn-edit" onClick={()=>openEdit(c)}>✏️ Edit</button>
                       <button className="btn-danger" onClick={()=>setConfirmId(c.id)}>🗑 Delete</button>
                     </div>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

@@ -7,8 +7,9 @@ import { getWarehouse } from '../services/warehouseApi'
 export default function Stocks() {
 
   const stockData = useSelector(state => state.warehouses.warehouseData)
+  const productDatas = useSelector(state => state.products.productsData)
   // console.log("stockData:",stockData);
-  const [stocks] = useState(stockData)
+  // console.log("productDatas:",productDatas);
   
   // get data
   const dispatch = useDispatch()
@@ -16,6 +17,11 @@ export default function Stocks() {
   useEffect(() => {
     dispatch(getWarehouse())
   }, [dispatch])
+
+  function productName(product_id) {
+    const product = productDatas.find(p => p.product_id === product_id)
+    return product.product_name
+  }
 
   return (
     <div>
@@ -31,10 +37,10 @@ export default function Stocks() {
           <table className="customers-table">
             <thead><tr><th>Product</th><th>Warehouse</th><th>Quantity</th></tr></thead>
             <tbody>
-              {stocks.map(p=>{
+              {stockData.map(p=>{
                 return (
                   <tr key={p.id}>
-                    <td><div style={{display:'flex',alignItems:'center',gap:10}}><span style={{fontSize:22}}>{p.emoji}</span><span style={{fontWeight:800}}>{p.warehouses_products.product_name}</span></div></td>
+                    <td><div style={{display:'flex',alignItems:'center',gap:10}}><span style={{fontSize:22}}>{p.emoji}</span><span style={{fontWeight:800}}>{productName(p.product_id)}</span></div></td>
                     <td style={{color:'var(--text-light)',fontWeight:700}}>{p.warehouse_name}</td>
                     <td style={{fontWeight:800}}>{p.qty}</td>
                   </tr>

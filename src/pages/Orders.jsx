@@ -20,7 +20,7 @@ const allInitial = [
 export default function Orders() {
 
   const orderDatas = useSelector(state => state.orders.orderData)
-  console.log("orderDatas:",orderDatas);
+  // console.log("orderDatas:",orderDatas);
 
   const dispatch = useDispatch()
 
@@ -67,7 +67,16 @@ export default function Orders() {
       <div className="table-wrap">
         <div className="table-scroll">
           <table className="customers-table">
-            <thead><tr><th>Order ID</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                {/* <th>Actions</th> */}
+              </tr>
+            </thead>
             <tbody>
               {orders.map((o,i)=>(
                 <tr key={i}>
@@ -76,12 +85,12 @@ export default function Orders() {
                   <td style={{color:'var(--text-light)'}}>{o.date}</td>
                   <td style={{fontWeight:800}}>${o.total_amount.toFixed(2)}</td>
                   <td><span className={getOrderClass(o.status)}>{o.status}</span></td>
-                  <td>
+                  {/* <td>
                     <div className="action-btns">
                       <button className="btn-edit" onClick={()=>openEdit(o)}>✏️ Edit</button>
                       <button className="btn-danger" onClick={()=>setConfirmId(o.id)}>🗑 Delete</button>
                     </div>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

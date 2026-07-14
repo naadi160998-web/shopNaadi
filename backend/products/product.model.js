@@ -45,7 +45,7 @@ function model(sequelize){
             type:DataTypes.STRING,
             allowNull:true
         },
-        product_stock:{
+        product_brand:{
             type:DataTypes.STRING,
             allowNull:true
         },

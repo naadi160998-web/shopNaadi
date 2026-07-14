@@ -20,7 +20,7 @@ const emptyForm = {
   product_size: "",
   product_color: "",
   product_type: "",
-  product_stock: "",
+  product_brand: "",
   vendor_id: 1,
   category_id: 0
 }
@@ -35,9 +35,12 @@ export default function Products() {
   // console.log("productDatas:",productDatas);
   // const { product_id, vendor_id, category_id, product_gender, product_size, product_type, product_color } = useSelector(state => state.products.productId)
   const { product_id, vendor_id, category_id, product_gender, product_size, product_type, product_color } = useSelector(state => state.products.productId)
-  console.log("productId:", product_id);
+  const brands = useSelector(state => state.brands.brandsData)
+  // console.log("brands:",brands);
+  
+  // console.log("productId:", product_id);
   const productImgPaths = useSelector(state => state.productImages.productImgPaths)
-  console.log("productImgPaths:", productImgPaths);
+  // console.log("productImgPaths:", productImgPaths);
 
   const [products, setProducts] = useState(!productDatas ? [] : productDatas) // Start with empty list for testing add functionality
   const [search, setSearch] = useState('')
@@ -76,7 +79,7 @@ export default function Products() {
       product_size: p.product_size,
       product_color: p.product_color,
       product_type: p.product_type,
-      product_stock: p.product_stock,
+      product_brand: p.product_brand,
       vendor_id: p.vendor_id,
       category_id: p.category_id
     }); 
@@ -94,13 +97,13 @@ export default function Products() {
     if (!form.product_name.trim()) return
 
     if (modal === 'add') {
-      setProducts(prev => [...prev, { product_id: nextId, ...form, price: parseFloat(form.new_price) || 0, stock: parseInt(form.product_stock) || 0 }])
+      setProducts(prev => [...prev, { product_id: nextId, ...form, price: parseFloat(form.new_price) || 0 }])
       setNextId(n => n + 1)
       dispatch(createProduct(form))
     } else {
       // update input fields
       console.log("form:",form);
-      setProducts(prev => [...prev, { product_id: editId, ...form, price: parseFloat(form.new_price) || 0, stock: parseInt(form.product_stock) || 0 }])
+      setProducts(prev => [...prev, { product_id: editId, ...form, price: parseFloat(form.new_price) || 0 }])
       setNextId(n => n + 1)
       dispatch(updateProduct(editId,form))
     }
@@ -221,10 +224,10 @@ export default function Products() {
               <div className="product-name">{p.product_name}</div>
               {/* <div className="product-cat">{p.category}</div> */}
               <div className="product-price">${parseFloat(p.new_price).toFixed(2)}</div>
-              <div className="stock-bar-bg">
+              {/* <div className="stock-bar-bg">
                 <div className="stock-bar" style={{ width: `${Math.min(100, (p.product_stock / 250) * 100)}%` }} />
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 3, fontWeight: 700 }}>{p.product_stock} in stock</div>
+              </div> */}
+              <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 3, fontWeight: 700 }}>{p.product_brand}</div>
               <div className="action-btns" style={{ marginTop: 10 }}>
                 <button className="btn-edit" onClick={() => openEdit(p)}>✏️ Edit</button>
                 <button className="btn-danger" onClick={() => setConfirmId(p.product_id)}>🗑 Delete</button>
@@ -271,9 +274,16 @@ export default function Products() {
                 onChange={e => setForm(f => ({ ...f, product_desc: e.target.value }))} />
             </div>
             <div className="form-group">
-              <label className="form-label">Product Stock</label>
-              <input className="form-input" placeholder="e.g. 100" value={form.product_stock}
-                onChange={e => setForm(f => ({ ...f, product_stock: e.target.value }))} />
+              <label className="form-label">Product Brands</label>
+              <select className="form-select" value={form.product_brand}
+                onChange={e => {
+                  setForm(f => ({ ...f, product_brand: e.target.value }))
+                }}>
+                <option value="">Select Brands</option>
+                {brands.map((c,i) => <option key={i} value={c.brand_name}>{c.brand_name}</option>)}  {/**Bug one */}
+              </select>
+              {/* <input className="form-input" placeholder="e.g. 100" value={form.product_stock}
+                onChange={e => setForm(f => ({ ...f, product_stock: e.target.value }))} /> */}
             </div>
             <div className="form-group">
               <label className="form-label">Product Price</label>
