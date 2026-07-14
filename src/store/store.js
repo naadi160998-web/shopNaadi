@@ -5,6 +5,7 @@ import productImageReducer from "../features/productImageSlice"
 import warehousesReducer from "../features/warehousesSlice"
 import stockReducer from "../features/stockSlice"
 import orderReducer from "../features/orderSlice"
+import brandReducer from "../features/brandSlice"
 
 import { 
     persistStore, 
@@ -25,13 +26,14 @@ const rootReducer = combineReducers({
     productImages:productImageReducer,
     warehouses: warehousesReducer,
     stocks:stockReducer,
-    orders:orderReducer
+    orders:orderReducer,
+    brands:brandReducer
 })
 
 const persistConfig = {
     key:"root",
     storage,
-    whiteList:["products","productImages","warehouses",stockReducer]
+    whiteList:["products","productImages","warehouses","stocks","brands"]
 }
 
 const persistedReducer = persistReducer(persistConfig,rootReducer);

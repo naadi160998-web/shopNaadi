@@ -31,6 +31,7 @@ app.use("/wishlist",require("./wishlist/wishlist.controller"))
 app.use("/payment",require("./payment/payment.controller"))
 app.use("/returnProduct",require("./return_product/return_product.controller"))
 app.use("/refunds",require("./refunds/refunds.controller"))
+app.use("/brands",require("./brand/brand.controller"))
 
 // temporary added
 app.use("/userss",require("./SimpleProducts/SimpleProducts.controller"))

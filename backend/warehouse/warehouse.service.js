@@ -26,7 +26,7 @@ async function createWarehouses(params) {
 
         await db.Warehouses.create(warehouses);
 
-        return {msg:"warehouse created successfully",status:401}
+        return {msg:"warehouse created successfully",status:201}
     } catch (error) {
         console.log("error:",error);
         
@@ -61,7 +61,7 @@ async function updateWarehouses(warehouse,warehouse_id) {
     try {
         const items = await warehouse;
         await db.Warehouses.update(items,{where:{warehouse_id:warehouse_id}})
-        return {data: items,msg:"Warehouse updated successfully",status:400}
+        return {data: items,msg:"Warehouse updated successfully",status:200}
     } catch (error) {
         return {data: error,msg:"Failed to update warehouse"}
     }
@@ -72,7 +72,7 @@ async function deleteWarehouses(warehouse_id) {
     try {
         // console.log("call  it");
         await db.Warehouses.destroy({where:{warehouse_id:Number(warehouse_id)}})
-        return {data:"Deleted",status:400}
+        return {data:"Deleted",status:200}
     } catch (error) {
         return {completed:false}
     }

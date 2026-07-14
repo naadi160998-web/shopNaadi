@@ -40,6 +40,7 @@ async function initialize() {
     db.Payment = require("../payment/payment.model")(sequelize)
     db.Return_Product = require("../return_product/return_product.model")(sequelize)
     db.Refunds = require("../refunds/refunds.model")(sequelize)
+    db.Brands = require("../brand/brand.model")(sequelize)
 
     // products relations
     db.Products.belongsTo(db.Suppliers,{foreignKey: 'supplier_id', as: 'suppliers'})

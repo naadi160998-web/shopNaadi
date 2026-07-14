@@ -12,6 +12,7 @@ import Notifications from './pages/Notifications'
 import Settings from './pages/Settings'
 import { IconSquareRoundedArrowRight } from '@tabler/icons-react'
 import Warehouses from './pages/Warehouses'
+import Brand from './pages/Brand'
 
 function useIsDesktop() {
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : true)
@@ -49,6 +50,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path='/warehouse' element={<Warehouses />}/>
+          <Route path='/brand' element={<Brand />}/>
           <Route path="/products" element={<Products />} />
           <Route path="/stocks" element={<Stocks />} />
           <Route path="/orders" element={<Orders />} />

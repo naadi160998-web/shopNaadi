@@ -84,7 +84,7 @@ const Warehouses = () => {
       // setWarehouses(prev => [...prev, { warehouse_id: editId, ...form}])
       // setNextId(n => n + 1)
       updateWarehouse(editId,form).then(res => {
-        if(res.status === 400){
+        if(res.status === 201){
           closeModal()
         }
       })
@@ -95,7 +95,7 @@ const Warehouses = () => {
 
   const handleDelete = (e) => {
     deleteWarehouse(e.warehouse_id).then(res => {
-      if(res.status === 400){
+      if(res.status === 200){
         alert("Deleted Successfully")
       }
     })
