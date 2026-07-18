@@ -34,7 +34,7 @@ export const getWarehouse = () => async (dispatch) => {
 
 export const updateWarehouse = async (warehouse_id, warehouseData) => {
     try {
-        // console.log("Updating warehouse with ID:", warehouse_id, "and data:", warehouseData);
+        console.log("Updating warehouse with ID:", warehouse_id, "and data:", warehouseData);
         const response = await axiosInstance.put(`/warehouses/update/${warehouse_id}`, warehouseData);
         return response.data;
     } catch (error) {

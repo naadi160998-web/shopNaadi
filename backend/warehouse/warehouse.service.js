@@ -59,10 +59,25 @@ async function getAllWarehouses() {
 // updateWarehouses
 async function updateWarehouses(warehouse,warehouse_id) {
     try {
-        const items = await warehouse;
+        const {qty} = await warehouse;
+        const warehouseData = await db.Warehouses.findOne({
+            where:{
+                warehouse_id:warehouse_id
+            }
+        })
+        const warehouseProductQty = warehouseData.qty
+        
+        console.log("warehouse:",warehouseProductQty);
+        const items = {
+            qty: warehouseProductQty + qty
+        }
+        console.log("items:",items);
+        
         await db.Warehouses.update(items,{where:{warehouse_id:warehouse_id}})
         return {data: items,msg:"Warehouse updated successfully",status:200}
     } catch (error) {
+        console.log("error:",error);
+        
         return {data: error,msg:"Failed to update warehouse"}
     }
 }
