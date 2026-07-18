@@ -9,10 +9,6 @@ function model(sequelize){
             autoIncrement:true,
             primaryKey: true
         },
-        stock_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
         product_id:{
             type: DataTypes.INTEGER,
             allowNull:true

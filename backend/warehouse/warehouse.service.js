@@ -59,7 +59,7 @@ async function getAllWarehouses() {
 // updateWarehouses
 async function updateWarehouses(warehouse,warehouse_id) {
     try {
-        const {qty} = await warehouse;
+        const {qty,status} = await warehouse;
         const warehouseData = await db.Warehouses.findOne({
             where:{
                 warehouse_id:warehouse_id
@@ -67,11 +67,10 @@ async function updateWarehouses(warehouse,warehouse_id) {
         })
         const warehouseProductQty = warehouseData.qty
         
-        console.log("warehouse:",warehouseProductQty);
         const items = {
-            qty: warehouseProductQty + qty
+            qty: status !== "Cancelled" ? warehouseProductQty - qty : warehouseProductQty + qty
         }
-        console.log("items:",items);
+        // console.log("items:",items);
         
         await db.Warehouses.update(items,{where:{warehouse_id:warehouse_id}})
         return {data: items,msg:"Warehouse updated successfully",status:200}

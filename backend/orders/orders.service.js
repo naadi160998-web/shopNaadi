@@ -8,6 +8,8 @@ module.exports = {
 
 async function createOrders(params) {
     try {
+        // console.log("params:",params);
+        
         const {order_number,customer_id,date,total_amount,status} = await params
 
         const orders = {
@@ -18,11 +20,16 @@ async function createOrders(params) {
             status:status
         }
 
-        // console.log("***************orders:",orders);
+        // // console.log("***************orders:",orders);
         if(!orders) return {completed: false, msg:"Values isn't found"}
 
         await db.Orders.create(orders)
-        return {msg:"Orders created successfully"}
+        const order = await db.Orders.findOne({
+            where:{
+                order_number:order_number
+            }
+        })
+        return {msg:"Orders created successfully",status:201,order:order}
     } catch (error) {
         console.log("error:",error);
         
@@ -34,26 +41,7 @@ async function getAllOrders() {
     try {
         const data = await db.Orders.findAll()
         if(!data) return "orders not found!!"
-
-        const arr = [];
-
-        for (let i = 0; i < data.length; i++) {
-            const s = await db.Orders.findAll({
-                where:{customer_id:data[i].customer_id},
-                include:[
-                    {
-                       model : db.Customers,
-                       as: "Orders_customer_id"
-                    }
-                ]
-            })
-
-            arr.push(s)
-        }
-
-        const orders = arr.flat()
-
-        return orders
+        return data
     } catch (error) {
 
         console.log("error:< ",error);

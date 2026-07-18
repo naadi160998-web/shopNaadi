@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const customerServices = require("./customer.services");
-const auth = require("../_Auth/auth")
+// const auth = require("../_Auth/auth")
 const multer = require("multer")
 const fs = require("fs")
 const path = require("path")
 
 module.exports = router
 
-router.get("/", auth, getAllData);
+router.get("/", getAllData);
 router.post("/", createCustomer);
 router.post("/login", login)
-router.post("/customerprofileimg/img/:id", auth, uploadCustomerImg)
+router.post("/customerprofileimg/img/:id", uploadCustomerImg)
 
 async function getAllData(req, res, next) {
     try {

@@ -17,6 +17,10 @@ function model(sequelize){
             type:DataTypes.INTEGER,
             allowNull:false
         },
+        warehouse_id:{
+            type:DataTypes.INTEGER,
+            allowNull:false
+        },
         quantity:{
             type:DataTypes.INTEGER,
             allowNull:true

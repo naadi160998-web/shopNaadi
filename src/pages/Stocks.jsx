@@ -7,7 +7,8 @@ import { getWarehouse, updateWarehouse, deleteWarehouse } from '../services/ware
 const emptyForm = {
   product_id: null,
   warehouse_id: null,
-  qty: 0
+  qty: 0,
+  status:""
 }
 
 export default function Stocks() {

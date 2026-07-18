@@ -72,7 +72,7 @@ async function initialize() {
     // order_items
     db.OrderItems.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'order_items_order'})
     db.OrderItems.belongsTo(db.Products,{foreignKey: 'product_id', as: 'order_items_products'})
-
+    db.OrderItems.belongsTo(db.Warehouses,{foreignKey: 'warehouse_id', as: 'order_items_warehouses'})
     // Purchase_Orders
     db.Purchase_Orders.belongsTo(db.Suppliers,{foreignKey: 'supplier_id', as: 'suppliers_Purchase_Orders'})
     db.Purchase_Orders.belongsTo(db.Warehouses,{foreignKey: 'warehouse_id', as: 'purchase_orders_warehouses'})

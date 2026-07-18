@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { initialCustomers, AVATARS } from '../data/mockData'
 import Modal from '../components/Modal'
 import ConfirmDialog from '../components/ConfirmDialog'
+import { useDispatch, useSelector } from 'react-redux'
+import { getCustomers } from "../services/customerApi"
 
 const TABS = ['All Customers', 'VIP Members', 'Recent']
 const PER_PAGE = 4
@@ -16,6 +18,12 @@ function getStatusClass(s) {
 }
 
 export default function Customers() {
+
+  const dispatch = useDispatch()
+
+  const customerData = useSelector(state => state.customers.customerData)
+  console.log("customerData:",customerData);
+  
   const [customers, setCustomers] = useState(initialCustomers)
   const [activeTab, setActiveTab] = useState('All Customers')
   const [page, setPage] = useState(1)
@@ -66,6 +74,10 @@ export default function Customers() {
         value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))} />
     </div>
   )
+
+  useEffect(()=>{
+    dispatch(getCustomers())
+  },[dispatch])
 
   return (
     <div>

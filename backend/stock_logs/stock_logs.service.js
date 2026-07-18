@@ -8,11 +8,11 @@ module.exports = {
 // create
 async function createStocks_Logs(params) {
     try {
-        const {movement_type,quantity,notes,product_id,warehouse_id,stock_id} = await params;
+        const {movement_type,qty,notes,product_id,warehouse_id,stock_id} = await params;
         
         const stock_logs = {
             movement_type: movement_type,
-            quantity: quantity,
+            quantity: qty,
             notes:notes,
             stock_id:stock_id,
             warehouse_id:warehouse_id,
@@ -24,7 +24,7 @@ async function createStocks_Logs(params) {
 
         await db.Stock_Logs.create(stock_logs);
 
-        return {msg:"stock_logs created successfully"}
+        return {msg:"stock_logs created successfully",status:201}
     } catch (error) {
         console.log("error:",error);
         
