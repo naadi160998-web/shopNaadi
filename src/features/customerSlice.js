@@ -9,7 +9,7 @@ const customerSlice = createSlice({
     initialState,
     reducers:{
         setCustomerDatas:(state,action) => {
-            console.log("*************order",action.payload.customerData);
+            // console.log("*************order",action.payload.customerData);
             state.customerData = action.payload.customerData
         }
     }

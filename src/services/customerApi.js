@@ -6,7 +6,7 @@ export const getCustomers = () => async (dispatch) => {
         const response = await axiosInstance.get(`/customer/`);
         const datas = response.data;
         
-        console.log("datas:",datas)
+        // console.log("datas:",datas)
         
 
         dispatch(setCustomerDatas({

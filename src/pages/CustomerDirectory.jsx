@@ -9,7 +9,7 @@ const TABS = ['All Customers', 'VIP Members', 'Recent']
 const PER_PAGE = 4
 const STATUS_OPTIONS = ['VIP CUSTOMER', 'REGULAR', 'NEW']
 
-const emptyForm = { name: '', email: '', avatar: '🐨' }
+const emptyForm = { name: '', email: '', status: 'REGULAR', totalSpend: '', orders: '', avatar: '🐨' }
 
 function getStatusClass(s) {
   if (s === 'VIP CUSTOMER') return 'status-badge status-vip'
@@ -17,16 +17,14 @@ function getStatusClass(s) {
   return 'status-badge status-new'
 }
 
-export default function Customers() {
-
-  let BASE_URL = "http://localhost:3000/"
+export default function CustomerDirectory() {
 
   const dispatch = useDispatch()
 
   const customerData = useSelector(state => state.customers.customerData)
-  // console.log("customerData:",customerData);
+  console.log("customerData:",customerData);
   
-  const [customers, setCustomers] = useState(customerData)
+  const [customers, setCustomers] = useState(initialCustomers)
   const [activeTab, setActiveTab] = useState('All Customers')
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
@@ -37,35 +35,37 @@ export default function Customers() {
   const [nextId, setNextId] = useState(100)
 
   const filtered = customers.filter(c => {
-    const matchSearch = c.customer_name.toLowerCase().includes(search.toLowerCase()) ||
-    c.customer_email.toLowerCase().includes(search.toLowerCase())
-    return matchSearch
-  })
+    const matchTab = activeTab === 'VIP Members' ? c.status === 'VIP CUSTOMER'
+      : activeTab === 'Recent' ? true : true
+    const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.email.toLowerCase().includes(search.toLowerCase())
+    return matchTab && matchSearch
+  }).slice(0, activeTab === 'Recent' ? 3 : undefined)
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
 
   const openAdd = () => { setForm(emptyForm); setModal('add') }
-  const openEdit = c => { setForm({ name: c.customer_name, email: c.customer_email, avatar: c.profile_path }); setEditId(c.customer_id); setModal('edit') }
+  const openEdit = c => { setForm({ name: c.name, email: c.email, status: c.status, totalSpend: c.totalSpend, orders: c.orders, avatar: c.avatar }); setEditId(c.id); setModal('edit') }
   const closeModal = () => { setModal(null); setEditId(null) }
 
   const handleSave = () => {
     if (!form.name.trim() || !form.email.trim()) return
     if (modal === 'add') {
-      // setCustomers(form)
-      // setNextId(n => n + 1)
+      setCustomers(prev => [...prev, { id: nextId, ...form, totalSpend: parseFloat(form.totalSpend)||0, orders: parseInt(form.orders)||0, lastActivity: 'Just now' }])
+      setNextId(n => n + 1)
     } else {
-      // setCustomers(prev => prev.map(c => c.id === editId ? { ...c, ...form, totalSpend: parseFloat(form.totalSpend)||0, orders: parseInt(form.orders)||0 } : c))
+      setCustomers(prev => prev.map(c => c.id === editId ? { ...c, ...form, totalSpend: parseFloat(form.totalSpend)||0, orders: parseInt(form.orders)||0 } : c))
     }
     closeModal()
   }
 
   const handleDelete = () => {
-    setCustomers(prev => prev.filter(c => c.customer_id !== confirmId))
+    setCustomers(prev => prev.filter(c => c.id !== confirmId))
     setConfirmId(null)
   }
 
-  const confirmCustomer = customers.find(c => c.customer_id === confirmId)
+  const confirmCustomer = customers.find(c => c.id === confirmId)
 
   const field = (label, key, type = 'text', placeholder = '') => (
     <div className="form-group">
@@ -82,40 +82,74 @@ export default function Customers() {
   return (
     <div>
       <div className="topbar">
-        <h1 className="page-title">Customers List</h1>
+        <h1 className="page-title">Customers Directory</h1>
         <div className="topbar-actions">
           <input className="search-input" placeholder="🔍 Search..." value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }} />
-          {/* <button className="btn-outline">⬇ Export</button> */}
-          {/* <button className="btn-primary" onClick={openAdd}>👤+ Add Customer</button> */}
+          <button className="btn-outline">⬇ Export</button>
+          <button className="btn-primary" onClick={openAdd}>👤+ Add Customer</button>
         </div>
+      </div>
+
+      <div className="summary-banner">
+        <div className="banner-left">
+          <div className="banner-label">TOTAL PORTFOLIO VALUE</div>
+          <div className="banner-value">${customers.reduce((a,c)=>a+c.totalSpend,0).toLocaleString()}</div>
+        </div>
+        <div className="banner-chart">
+          {[35,45,55,50,65,80,100].map((h,i)=>(
+            <div key={i} className={`mini-bar${i>=5?' tall':''}`} style={{height:`${h}%`}} />
+          ))}
+        </div>
+        <div style={{width:'1px',height:'60px',background:'#e0f0f0',flexShrink:0}} />
+        <div className="banner-right">
+          <div style={{fontSize:20,marginBottom:4}}>👥</div>
+          <div className="customer-count">{customers.length.toLocaleString()}</div>
+          <div className="customer-count-label">Total Active Customers</div>
+          <div className="avatar-stack">
+            {customers.slice(0,3).map((c,i)=>(
+              <div key={i} className="avatar-stack-img">{c.avatar}</div>
+            ))}
+            <div className="avatar-stack-more">+{Math.max(0,customers.length-3)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="tabs">
+        {TABS.map(t=>(
+          <button key={t} className={`tab${activeTab===t?' active':''}`}
+            onClick={()=>{setActiveTab(t);setPage(1)}}>{t}</button>
+        ))}
       </div>
 
       <div className="table-wrap">
         <div className="table-scroll">
           <table className="customers-table">
             <thead><tr>
-              <th>Name</th><th>Mobile</th>
-              <th>Email</th><th>Address</th>
+              <th>Customer Details</th><th>Status</th>
+              <th>Total Spend</th><th>Orders</th>
+              <th>Last Activity</th>
+              {/* <th>Actions</th> */}
             </tr></thead>
             <tbody>
               {paged.length === 0 && (
                 <tr><td colSpan={6} style={{textAlign:'center',padding:'2rem',color:'var(--text-light)',fontWeight:700}}>No customers found</td></tr>
               )}
-              {paged.map((c,i)=>(
-                <tr key={i}>
+              {paged.map(c=>(
+                <tr key={c.id}>
                   <td>
                     <div className="customer-cell">
-                      <div className="customer-avatar">
-                        <img className="customer-avatar" src={`${BASE_URL}${c.profile_path}`} alt="" /></div>
+                      <div className="customer-avatar">{c.avatar}</div>
                       <div>
-                        <div className="customer-name">{c.customer_name}</div>
+                        <div className="customer-name">{c.name}</div>
+                        <div className="customer-email">{c.email}</div>
                       </div>
                     </div>
                   </td>
-                  <td style={{fontWeight:800}}>{c.customer_mobile}</td>
-                  <td style={{fontWeight:800}}>{c.customer_email}</td>
-                  <td style={{fontWeight:800}}>{c.customer_address}</td>
+                  <td><span className={getStatusClass(c.status)}>{c.status}</span></td>
+                  <td style={{fontWeight:800}}>${c.totalSpend.toLocaleString('en-US',{minimumFractionDigits:2})}</td>
+                  <td style={{fontWeight:800}}>{c.orders}</td>
+                  <td style={{color:'var(--text-light)',fontWeight:600}}>{c.lastActivity}</td>
                   {/* <td>
                     <div className="action-btns">
                       <button className="btn-edit" onClick={()=>openEdit(c)}>✏️ Edit</button>
@@ -140,7 +174,7 @@ export default function Customers() {
       </div>
 
       {/* Add / Edit Modal */}
-      {/* {modal && (
+      {modal && (
         <Modal
           title={modal==='add'?'Add New Customer':'Edit Customer'}
           onClose={closeModal}
@@ -175,17 +209,17 @@ export default function Customers() {
             {field('Total Orders','orders','number','e.g. 42')}
           </div>
         </Modal>
-      )} */}
+      )}
 
       {/* Delete Confirm */}
-      {/* {confirmId && (
+      {confirmId && (
         <ConfirmDialog
           message="Are you sure you want to delete"
           name={confirmCustomer?.name}
           onConfirm={handleDelete}
           onCancel={()=>setConfirmId(null)}
         />
-      )} */}
+      )}
     </div>
   )
 }
