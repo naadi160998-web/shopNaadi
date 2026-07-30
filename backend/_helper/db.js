@@ -41,6 +41,10 @@ async function initialize() {
     db.Return_Product = require("../return_product/return_product.model")(sequelize)
     db.Refunds = require("../refunds/refunds.model")(sequelize)
     db.Brands = require("../brand/brand.model")(sequelize)
+    db.Billing_Address = require("../billing_address/billing_address.model")(sequelize);
+    db.Invoice = require("../invoices/invoices.model")(sequelize); 
+    db.Shipment = require("../shipment/shipment.model")(sequelize); 
+    db.Deliveries = require("../deliveries/deliveries.model")(sequelize); 
 
     // products relations
     db.Products.belongsTo(db.Suppliers,{foreignKey: 'supplier_id', as: 'suppliers'})
@@ -85,6 +89,7 @@ async function initialize() {
     
     // Payment
     db.Payment.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'payment_orders'})
+    db.Payment.belongsTo(db.Customers,{foreignKey: 'customer_id', as: 'payment_customer'})
 
     // Return_Product
     db.Return_Product.belongsTo(db.OrderItems,{foreignKey: 'order_items_id', as: 'return_product_order_items_id'})
@@ -92,6 +97,22 @@ async function initialize() {
     // Refunds
     db.Refunds.belongsTo(db.Return_Product,{foreignKey: 'return_id', as: 'Refunds_Return_Product'})
     db.Refunds.belongsTo(db.Payment,{foreignKey: 'payment_id', as: 'Refunds_payment_id'})
+
+    // Billing Address
+    db.Billing_Address.belongsTo(db.Customers,{foreignKey: 'customer_id', as: 'Billing_Address_customer_id'})
+    db.Billing_Address.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'Billing_Address_orders'})
+
+    // Invoices
+    db.Invoice.belongsTo(db.Customers,{foreignKey: 'customer_id', as: 'Invoice_customer_id'})
+    db.Invoice.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'Invoice_orders'})
+    db.Invoice.belongsTo(db.Billing_Address,{foreignKey: 'billing_address_id', as: 'Invoice_billing_address_id'})
+
+    // Shipment
+    db.Deliveries.belongsTo(db.Shipment,{foreignKey: 'shipment_id', as: 'Deliveries_shipment_id'})
+    db.Deliveries.belongsTo(db.Orders,{foreignKey: 'order_id', as: 'Deliveries_orders_id'})
+
+    // Deliveries
+
     // sync all models with database
     await sequelize.sync({alter: false});
 }
