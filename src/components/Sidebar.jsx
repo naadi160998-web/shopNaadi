@@ -3,9 +3,10 @@ import { NavLink } from 'react-router-dom'
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: '⊞' },
-  { to: '/brand', label: 'Brands', icon: '👕', chevron: true },
-  { to: '/warehouse', label: 'Warehouses', icon: '👕', chevron: true },
-  { to: '/products', label: 'Products', icon: '👕', chevron: true },
+  { to: '/brand', label: 'Brands', icon: '👕'},
+  { to: '/warehouse', label: 'Warehouses', icon: '👕'},
+  { to: '/products', label: 'Products', icon: '👕'},
+  // { to: '/products', label: 'Products', icon: '👕', chevron: true },
   { to: '/stocks', label: 'Stocks', icon: '🏠' },
   { to: '/orders', label: 'Orders', icon: '🛒', badge: 12 },
   { to: '/invoices', label: 'Invoices', icon: '📋' },

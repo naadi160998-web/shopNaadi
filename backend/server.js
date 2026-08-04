@@ -32,6 +32,10 @@ app.use("/payment",require("./payment/payment.controller"))
 app.use("/returnProduct",require("./return_product/return_product.controller"))
 app.use("/refunds",require("./refunds/refunds.controller"))
 app.use("/brands",require("./brand/brand.controller"))
+app.use("/billing",require("./billing_address/billing_address.controller"))
+app.use("/invoice",require("./invoices/invoices.controller"))
+app.use("/shipment",require("./shipment/shipment.controller"))
+app.use("/delivery",require("./deliveries/deliveries.controller"))
 
 // temporary added
 app.use("/userss",require("./SimpleProducts/SimpleProducts.controller"))

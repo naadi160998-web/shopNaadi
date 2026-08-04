@@ -55,15 +55,15 @@ function model(sequelize){
             )
         },
         estimated_delivery:{
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allowNull:true
         },
         dispatched_at:{
-            type: DataTypes.TIME,
+            type: DataTypes.STRING,
             allowNull:true
         },
         shipped_at:{
-            type: DataTypes.TIME,
+            type: DataTypes.STRING,
             allowNull:true
         },
         notes:{

@@ -1,33 +1,28 @@
 const db = require("../_helper/db")
-const { Op } = require("sequelize")
 
-module.exports = {
-    createPayment
+module.exports={
+    createPayment,
+    getAllPayment
 }
 
 async function createPayment(params) {
     try {
-        const {
-            order_id,
-            payment_method,
-            payment_status,
-            transaction_id
-        } = await params
-
-        const payment = {
-            order_id:order_id,
-            payment_method:payment_method,
-            payment_status:payment_status,
-            transaction_id:transaction_id
-        }
-
-        console.log("************payment:",payment);
-        if(!payment) return "Value not come!!!"
-
-        await db.Payment.create(payment)
-        return "create successfully"
+        const obj = await params;
+        await db.Payment.create(obj)
+        return{msg:"created successfully",status:201}
     } catch (error) {
-        console.log(":< = ",error);
+        console.log("error:",error);
+        return error
+    }
+}
+
+async function getAllPayment() {
+    try {
+        const data = await db.Payment.findAll();
+        return {data,status:200}
+    } catch (error) {
+        console.log(error);
+        
         return error
     }
 }

@@ -25,10 +25,6 @@ function model(sequelize){
             type: DataTypes.STRING,
             allowNull:true
         },
-        receivered_phone:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
         received_by:{
             type: DataTypes.STRING,
             allowNull:true
