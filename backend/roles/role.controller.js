@@ -1,65 +1,103 @@
 const express = require("express");
-const router = express.Router();
 const roleServices = require("./role.services");
-const auth = require("../_Auth/auth");
+const router = express.Router();
 
-module.exports = router
+// CREATE
+const createRole = async (req, res) => {
+  try {
+    const role = await req.body;
+    const newRole = await roleServices.createRole(role);
+    res.status(201).json({
+      success: true,
+      data: newRole,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-// router create
-router.post("/",auth,createRoles)
-router.get("/",getRoles)
-router.post("/:id",auth,updateRoles)
-router.delete("/:id",auth,removeRoles)
+// READ ALL
+const getRoles = async (req, res) => {
+  try {
+    const roles = await roleServices.getRoles();
 
-// route function
-async function createRoles(req,res,next) {
-    try {
-        const result = await roleServices.createRole(req.body)
-        return res.json({
-            status:201,
-            msg:"Done"
-        })
-    } catch (error) {
-        return error
+    res.json({
+      success: true,
+      data: roles,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// READ ONE
+const getRole = async (req, res) => {
+  try {
+    const role = await roleServices.getRole(req.params.id);
+
+    if (!role) {
+      return res.status(404).json({
+        success: false,
+        message: "Role not found",
+      });
     }
-}
 
-async function getRoles(req,res,next) {
-    try {
-        // console.log("controllers:***********************************");
-        
-        const result = await roleServices.getRoles(); 
-        return res.json({
-            status:200,
-            result:result
-        })
-    } catch (error) {
-        return error
-    }
-}
+    res.json({
+      success: true,
+      data: role,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-async function updateRoles(req,res,next) {
-    try {
-        const id = req.params.id
-        const result = await roleServices.updateRole(req.body,id)
-        return res.json({
-            status:200,
-            result:result
-        })
-    } catch (error) {
-        return error
-    }
-}
+// UPDATE
+const updateRole = async (req, res) => {
+  try {
+    const role = await roleServices.updateRole(req.params.id, req.body);
 
-async function removeRoles(req,res,next) {
-    try {
-        const id = req.params.id
-        const result = await roleServices.removeRole(id)
-        return res.json({
-            status:200,
-            result:result
-        })
-    } catch (error) {
-        return error
-    }
-}
+    res.json({
+      success: true,
+      data: role,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// DELETE
+const deleteRole = async (req, res) => {
+  try {
+    await roleServices.deleteRole(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Role deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = router;
+
+router.post("/", createRole);
+router.get("/", getRoles);
+router.get("/:id", getRole);
+router.put("/:id", updateRole);
+router.delete("/:id", deleteRole);

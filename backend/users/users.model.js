@@ -1,47 +1,51 @@
-const { DataTypes } = require('sequelize');
+const mongoose = require("mongoose");
 
-module.exports = model;
+const userSchema = new mongoose.Schema(
+  {
+    role_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "role",
+      required: true,
+    },
+    user_name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-function model(sequelize){
-    const attributes = {
-        user_id:{
-            type: DataTypes.INTEGER, 
-            autoIncrement: true,
-            primaryKey: true
-        },
-        user_name:{
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        email:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        password:{
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        mobile:{
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        address:{
-            type: DataTypes.STRING,
-            allowNull: true
-        },
-        profile_img_name:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        profile_path:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        role_id:{
-            type: DataTypes.INTEGER,
-            allowNull: true
-        }
-    };
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
 
-    return sequelize.define('users', attributes, {timestamps: false})
-}
+    password: {
+      type: String,
+      required: true,
+    },
+
+    mobile: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
+    address: {
+      type: String,
+    },
+
+    profile_img_name: {
+      type: String,
+    },
+
+    profile_path: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("user", userSchema);
