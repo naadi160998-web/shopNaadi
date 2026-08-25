@@ -1,101 +1,294 @@
-const db = require("../_helper/db");
-const fs = require("fs")
-const path = require("path")
-const { Op } = require("sequelize")
+const ProductImgSrc = require("./productimgs.model");
 
 module.exports = {
-    uploadProductImgs,
-    deleteImgPath,
-    getImgData,
-    updateProductImgs
-}
+  uploadProductImgs,
+  deleteImgPath,
+  getImgData,
+  updateProductImgs,
+};
 
-async function uploadProductImgs(files, vendor_id, product_id,category_id,img_categories) {
-    try {
-        const imageRecords = files.map(file => ({
-            product_img_src: file,
-            vendor_id: Number(vendor_id),
-            product_id: Number(product_id),
-            category_id:Number(category_id)
-        }));
 
-        await db.ProductImgSrc.findAll({
-            where: {
-                vendor_id: Number(vendor_id),
-                product_id: Number(product_id),
-                category_id: Number(category_id)
-            }
-        }).then(async existingRecords => {
-            const existingPaths = existingRecords.map(record => record.product_img_src);
-            const newRecords = imageRecords.filter(record => !existingPaths.includes(record.product_img_src));
-            await db.ProductImgSrc.bulkCreate(newRecords);
-        });
+// ========================================
+// UPLOAD PRODUCT IMAGES
+// ========================================
 
-        // getImageData
-        const imgData = await getImgData(vendor_id,product_id,category_id)
+async function uploadProductImgs(
+  files,
+  vendor_id,
+  product_id,
+  category_id
+) {
+  try {
 
-        return { msg: "Created Successfully",data:imgData};
-    } catch (error) {
-        console.error(error);
-        return { msg: "Error while uploading images", error };
+    // files should contain image paths
+    const imageRecords = files.map((file) => ({
+      product_img_src: file,
+
+      vendor_id: vendor_id,
+
+      product_id: product_id,
+
+      category_id: category_id,
+    }));
+
+
+    // ========================================
+    // CHECK EXISTING IMAGES
+    // ========================================
+
+    const existingRecords =
+      await ProductImgSrc.find({
+        vendor_id,
+        product_id,
+        category_id,
+      });
+
+
+    const existingPaths = existingRecords.map(
+      (record) => record.product_img_src
+    );
+
+
+    // ========================================
+    // REMOVE DUPLICATE IMAGES
+    // ========================================
+
+    const newRecords = imageRecords.filter(
+      (record) =>
+        !existingPaths.includes(
+          record.product_img_src
+        )
+    );
+
+
+    // ========================================
+    // INSERT NEW IMAGES
+    // ========================================
+
+    if (newRecords.length > 0) {
+      await ProductImgSrc.insertMany(
+        newRecords
+      );
     }
+
+
+    // ========================================
+    // GET IMAGE DATA
+    // ========================================
+
+    const imgData = await getImgData(
+      vendor_id,
+      product_id,
+      category_id
+    );
+
+
+    return {
+      msg: "Created Successfully",
+      data: imgData,
+    };
+
+  } catch (error) {
+
+    console.error(
+      "Upload image error:",
+      error
+    );
+
+    return {
+      msg: "Error while uploading images",
+      error: error.message,
+    };
+  }
 }
 
-async function updateProductImgs(files, vendor_id, product_id,product_img_id) {
-    try {
-        // const imageRecords = files.map(file => ({
-        //     product_img_src: file,
-        //     vendor_id: Number(vendor_id),
-        //     product_id: Number(product_id),
-        //     product_img_id: Number(product_img_id)
-        // }));
 
-        console.log("**********imageRecords:",files);
-        
-        await db.ProductImgSrc.update(
-            { product_img_src: files },
-            {
-                where: {
-                    product_img_id: Number(product_img_id),
-                    vendor_id: Number(vendor_id),
-                    product_id: Number(product_id),
+// ========================================
+// UPDATE PRODUCT IMAGE
+// ========================================
 
-                }
-            }
-        );
-        return { msg: "Updated Successfully" };
-    } catch (error) {
-        console.error(error);
-        return { msg: "Error while uploading images", error };
+async function updateProductImgs(
+  files,
+  vendor_id,
+  product_id,
+  product_img_id
+) {
+  try {
+
+    console.log(
+      "********** imageRecords:",
+      files
+    );
+
+
+    // If files is a single image path
+    const imagePath = Array.isArray(files)
+      ? files[0]
+      : files;
+
+
+    const updatedImage =
+      await ProductImgSrc.findOneAndUpdate(
+        {
+          _id: product_img_id,
+
+          vendor_id: vendor_id,
+
+          product_id: product_id,
+        },
+
+        {
+          product_img_src: imagePath,
+        },
+
+        {
+          new: true,
+
+          runValidators: true,
+        }
+      );
+
+
+    if (!updatedImage) {
+      return {
+        msg: "Image not found",
+      };
     }
+
+
+    return {
+      msg: "Updated Successfully",
+      data: updatedImage,
+    };
+
+  } catch (error) {
+
+    console.error(
+      "Update image error:",
+      error
+    );
+
+    return {
+      msg: "Error while updating image",
+      error: error.message,
+    };
+  }
 }
 
-async function getImgData(vendor_id,product_id,category_id) {
-    try {
-        const imgData = await db.ProductImgSrc.findAll({
-            where: {
-                vendor_id: Number(vendor_id),
-                product_id: Number(product_id),
-                category_id: Number(category_id)
-            }
-        });
-        return imgData;
-    } catch (error) {
-        throw new Error("Error fetching image data");
-    }
+
+// ========================================
+// GET IMAGE DATA
+// ========================================
+
+async function getImgData(
+  vendor_id,
+  product_id,
+  category_id
+) {
+  try {
+
+    const imgData =
+      await ProductImgSrc.find({
+        vendor_id,
+
+        product_id,
+
+        category_id,
+      });
+
+
+    return imgData;
+
+  } catch (error) {
+
+    console.error(
+      "Get image data error:",
+      error
+    );
+
+    throw new Error(
+      "Error fetching image data"
+    );
+  }
 }
+
+
+// ========================================
+// DELETE IMAGE
+// ========================================
 
 async function deleteImgPath(params) {
-    try {
-        const { product_img_id, imagePath, product_id, vendor_id } = await params
-        // console.log("deleteImgPath params:", {product_img_id,vendor_id,product_id,imagePath});
-        await db.ProductImgSrc.destroy({where:{
-            product_img_id:product_img_id,
-            vendor_id:vendor_id,
-            product_id:product_id
-        }})
-        return {msg:"Deleted Successfully"}
-    } catch (error) {
-        return {msg:error}
+  try {
+
+    const {
+      product_img_id,
+      imagePath,
+      product_id,
+      vendor_id,
+    } = params;
+
+
+    // ========================================
+    // DELETE DATABASE RECORD
+    // ========================================
+
+    const deletedImage =
+      await ProductImgSrc.findOneAndDelete({
+        _id: product_img_id,
+
+        vendor_id: vendor_id,
+
+        product_id: product_id,
+      });
+
+
+    if (!deletedImage) {
+      return {
+        msg: "Image not found",
+      };
     }
+
+
+    // ========================================
+    // DELETE PHYSICAL FILE
+    // ========================================
+
+    const filePath =
+      imagePath ||
+      deletedImage.product_img_src;
+
+
+    if (filePath) {
+
+      const fullPath =
+        path.resolve(filePath);
+
+
+      if (fs.existsSync(fullPath)) {
+
+        fs.unlinkSync(fullPath);
+
+        console.log(
+          "Image file deleted:",
+          fullPath
+        );
+      }
+    }
+
+
+    return {
+      msg: "Deleted Successfully",
+    };
+
+  } catch (error) {
+
+    console.error(
+      "Delete image error:",
+      error
+    );
+
+    return {
+      msg: error.message,
+    };
+  }
 }
