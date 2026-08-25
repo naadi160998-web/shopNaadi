@@ -27,6 +27,7 @@ const suppliersRoutes = require("./suppliers/suppliers.controller")
 const vendorRoutes = require("./vendors/vendors.controller")
 const warehouseRoutes = require("./warehouse/warehouse.controller")
 const wishlistRoutes = require("./wishlist/wishlist.controller")
+const offerRoutes = require("./offers/offer.controller")
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use("/api/suppliers",suppliersRoutes)
 app.use("/api/vendors",vendorRoutes)
 app.use("/api/warehouse",warehouseRoutes)
 app.use("/api/wishlist",wishlistRoutes)
+app.use("/api/offer",offerRoutes)
 
 const PORT = process.env.PORT || 5000;
 
