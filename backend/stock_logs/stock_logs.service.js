@@ -1,33 +1,108 @@
-const db = require("../_helper/db");
-const { Op } = require("sequelize");
+const StockLogs = require("./stock_logs.model");
+
+// ========================================
+// CREATE STOCK LOG
+// ========================================
+const createStockLog = async (params) => {
+  try {
+    const stockLog = await StockLogs.create(params);
+
+    return stockLog;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// READ ALL STOCK LOGS
+// ========================================
+const getAllStockLogs = async () => {
+  try {
+    const stockLogsList = await StockLogs.find()
+      .populate("product_id")
+      .populate("warehouse_id");
+
+    return stockLogsList;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// READ ONE STOCK LOG
+// ========================================
+const getStockLog = async (id) => {
+  try {
+    const stockLog = await StockLogs.findById(id)
+      .populate("product_id")
+      .populate("warehouse_id");
+
+    if (!stockLog) {
+      return {
+        success: false,
+        message: "Stock log not found",
+      };
+    }
+
+    return stockLog;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// UPDATE STOCK LOG
+// ========================================
+const updateStockLog = async (id, params) => {
+  try {
+    const stockLog = await StockLogs.findByIdAndUpdate(
+      id,
+      params,
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .populate("product_id")
+      .populate("warehouse_id");
+
+    if (!stockLog) {
+      return {
+        success: false,
+        message: "Stock log not found",
+      };
+    }
+
+    return stockLog;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// DELETE STOCK LOG
+// ========================================
+const deleteStockLog = async (id) => {
+  try {
+    const stockLog = await StockLogs.findByIdAndDelete(id);
+
+    if (!stockLog) {
+      return {
+        success: false,
+        message: "Stock log not found",
+      };
+    }
+
+    return "Stock log deleted successfully";
+  } catch (error) {
+    return error;
+  }
+};
 
 module.exports = {
-    createStocks_Logs,
-}
-
-// create
-async function createStocks_Logs(params) {
-    try {
-        const {movement_type,qty,notes,product_id,warehouse_id,stock_id} = await params;
-        
-        const stock_logs = {
-            movement_type: movement_type,
-            quantity: qty,
-            notes:notes,
-            stock_id:stock_id,
-            warehouse_id:warehouse_id,
-            product_id: product_id
-        }
-
-        console.log("***************stock_logs:",stock_logs);
-        if(!stock_logs) return {completed: false, msg:"Values isn't found"}
-
-        await db.Stock_Logs.create(stock_logs);
-
-        return {msg:"stock_logs created successfully",status:201}
-    } catch (error) {
-        console.log("error:",error);
-        
-        return "Something went wrong"
-    }
-}
+  createStockLog,
+  getAllStockLogs,
+  getStockLog,
+  updateStockLog,
+  deleteStockLog,
+};

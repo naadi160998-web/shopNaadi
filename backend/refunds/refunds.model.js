@@ -1,35 +1,37 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model
+const refundSchema = new mongoose.Schema(
+  {
+    return_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Return",
+      default: null,
+    },
 
-function model(sequelize){
-    const attributes = {
-        refund_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        return_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        payment_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        refund_amount:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        refund_status:{
-            type:DataTypes.ENUM(
-                'pending',
-                'processed',
-                'failed'
-            ),
-            defaultValue:"pending"
-        }
-    }
+    payment_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment",
+      default: null,
+    },
 
-    return sequelize.define("refunds",attributes,{timestamps:true})
-}
+    refund_amount: {
+      type: Number,
+      default: 0,
+    },
+
+    refund_status: {
+      type: String,
+      enum: [
+        "pending",
+        "processed",
+        "failed",
+      ],
+      default: "pending",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Refund", refundSchema);

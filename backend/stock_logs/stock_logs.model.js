@@ -1,40 +1,44 @@
-const { DataTypes } = require('sequelize');
+const mongoose = require("mongoose");
 
-module.exports = model;
+const stockLogsSchema = new mongoose.Schema(
+  {
+    product_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      default: null,
+    },
 
-function model(sequelize){
-    const attributes = {
-        stock_logs_id:{
-            type: DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey: true
-        },
-        product_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        warehouse_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        movement_type:{
-            type: DataTypes.ENUM(
-                "stock_in",
-                "stock_out",
-                "return",
-                "adjustment"
-            ),
-            allowNull:true
-        },
-        quantity:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        notes:{
-            type:DataTypes.TEXT,
-            allowNull:true
-        }
-    };
+    warehouse_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Warehouse",
+      default: null,
+    },
 
-    return sequelize.define('stock_logs',attributes,{timestamps: true})
-}
+    movement_type: {
+      type: String,
+      enum: [
+        "stock_in",
+        "stock_out",
+        "return",
+        "adjustment",
+      ],
+      default: null,
+    },
+
+    quantity: {
+      type: Number,
+      default: 0,
+    },
+
+    notes: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("StockLogs", stockLogsSchema);

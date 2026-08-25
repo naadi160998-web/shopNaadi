@@ -1,28 +1,30 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model
+const returnProductSchema = new mongoose.Schema(
+  {
+    order_items_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "OrderItem",
+      default: null,
+    },
 
-function model(sequelize){
-    const attributes = {
-        return_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        order_items_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        status:{
-            type:DataTypes.ENUM(
-                "requested",
-                "approved",
-                "rejected",
-                "completed"
-            ),
-            defaultValue:"requested"
-        }
-    }
+    status: {
+      type: String,
+      enum: [
+        "requested",
+        "approved",
+        "rejected",
+        "completed",
+      ],
+      default: "requested",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-    return sequelize.define("return_product",attributes,{timestamps:true})
-}
+module.exports = mongoose.model(
+  "ReturnProduct",
+  returnProductSchema
+);

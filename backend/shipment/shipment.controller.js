@@ -1,29 +1,139 @@
-const express = require("express")
-const routes = express.Router()
-const shipmentService = require("./shipment.service")
-const auth=require("../_Auth/auth")
+const express = require("express");
+const shipmentServices = require("./shipment.service");
 
-module.exports = routes
+const router = express.Router();
 
-routes.post("/",createShipment)
-routes.get("/",getAllShipment)
+// ========================================
+// CREATE SHIPMENT
+// ========================================
+const createShipment = async (req, res) => {
+  try {
+    const shipment = req.body;
 
-async function createShipment(req,res,next) {
-    try {
-        const collections = await req.body;
-        const result = await shipmentService.createShipment(collections)
-        return res.json(result)
-    } catch (error) {
-        console.log(error);
-        return res.json(error)
+    const newShipment =
+      await shipmentServices.createShipment(shipment);
+
+    res.status(201).json({
+      success: true,
+      data: newShipment,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// READ ALL SHIPMENTS
+// ========================================
+const getAllShipments = async (req, res) => {
+  try {
+    const shipmentsList =
+      await shipmentServices.getAllShipments();
+
+    res.json({
+      success: true,
+      data: shipmentsList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// READ ONE SHIPMENT
+// ========================================
+const getShipment = async (req, res) => {
+  try {
+    const shipment =
+      await shipmentServices.getShipment(req.params.id);
+
+    if (!shipment || shipment.success === false) {
+      return res.status(404).json({
+        success: false,
+        message: "Shipment not found",
+      });
     }
-}
 
-async function getAllShipment(req, res, next) {
-    try {
-        const data = await shipmentService.getAllShipment()
-        return res.json(data)
-    } catch (error) {
-        return res.json(error)
+    res.json({
+      success: true,
+      data: shipment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// UPDATE SHIPMENT
+// ========================================
+const updateShipment = async (req, res) => {
+  try {
+    const shipment =
+      await shipmentServices.updateShipment(
+        req.params.id,
+        req.body
+      );
+
+    if (!shipment || shipment.success === false) {
+      return res.status(404).json({
+        success: false,
+        message: "Shipment not found",
+      });
     }
-}
+
+    res.json({
+      success: true,
+      data: shipment,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// DELETE SHIPMENT
+// ========================================
+const deleteShipment = async (req, res) => {
+  try {
+    const result =
+      await shipmentServices.deleteShipment(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Shipment deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// ROUTES
+// ========================================
+
+router.post("/", createShipment);
+
+router.get("/", getAllShipments);
+
+router.get("/:id", getShipment);
+
+router.put("/:id", updateShipment);
+
+router.delete("/:id", deleteShipment);
+
+module.exports = router;

@@ -1,28 +1,114 @@
-const db = require("../_helper/db")
+const Shipment = require("./shipment.model");
 
-module.exports={
-    createShipment,
-    getAllShipment
-}
+// ========================================
+// CREATE SHIPMENT
+// ========================================
+const createShipment = async (params) => {
+  try {
+    const shipment = await Shipment.create(params);
 
-async function createShipment(params) {
-    try {
-        const obj = await params;
-        await db.Shipment.create(obj)
-        return{msg:"created successfully",status:201}
-    } catch (error) {
-        console.log("error:",error);
-        return error
+    return shipment;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// READ ALL SHIPMENTS
+// ========================================
+const getAllShipments = async () => {
+  try {
+    const shipmentsList = await Shipment.find()
+      .populate("customer_id")
+      .populate("order_id")
+      .populate("invoice_id")
+      .populate("warehouse_id");
+
+    return shipmentsList;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// READ ONE SHIPMENT
+// ========================================
+const getShipment = async (id) => {
+  try {
+    const shipment = await Shipment.findById(id)
+      .populate("customer_id")
+      .populate("order_id")
+      .populate("invoice_id")
+      .populate("warehouse_id");
+
+    if (!shipment) {
+      return {
+        success: false,
+        message: "Shipment not found",
+      };
     }
-}
 
-async function getAllShipment() {
-    try {
-        const data = await db.Shipment.findAll();
-        return {data,status:200}
-    } catch (error) {
-        console.log(error);
-        
-        return error
+    return shipment;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// UPDATE SHIPMENT
+// ========================================
+const updateShipment = async (id, params) => {
+  try {
+    const shipment = await Shipment.findByIdAndUpdate(
+      id,
+      params,
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .populate("customer_id")
+      .populate("order_id")
+      .populate("invoice_id")
+      .populate("warehouse_id");
+
+    if (!shipment) {
+      return {
+        success: false,
+        message: "Shipment not found",
+      };
     }
-}
+
+    return shipment;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// DELETE SHIPMENT
+// ========================================
+const deleteShipment = async (id) => {
+  try {
+    const shipment = await Shipment.findByIdAndDelete(id);
+
+    if (!shipment) {
+      return {
+        success: false,
+        message: "Shipment not found",
+      };
+    }
+
+    return "Shipment deleted successfully";
+  } catch (error) {
+    return error;
+  }
+};
+
+module.exports = {
+  createShipment,
+  getAllShipments,
+  getShipment,
+  updateShipment,
+  deleteShipment,
+};

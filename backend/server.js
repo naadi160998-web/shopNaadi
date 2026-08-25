@@ -18,6 +18,11 @@ const orderitemsRoutes = require("./order_items/order_items.controller")
 const paymentRoutes = require("./payment/payment.controller")
 const productRoutes = require("./products/product.controller")
 const productImgRoutes = require("./imgUpload/productimgs.controller")
+const purchaseOrderRoutes = require("./purchase_orders/purchase_orders.controller")
+const refundRoutes = require("./refunds/refunds.controller")
+const returnProductRoutes = require("./return_product/return_product.controller")
+const shipmentRoutes = require("./shipment/shipment.controller")
+const stocklogRoutes = require("./stock_logs/stock_logs.controller")
 
 const app = express();
 
@@ -46,6 +51,11 @@ app.use("/api/orderitems", orderitemsRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/product",productRoutes)
 app.use("/api/productimgs",productImgRoutes)
+app.use("/api/purchaseorder",purchaseOrderRoutes)
+app.use("/api/refund",refundRoutes)
+app.use("/api/returnProduct",returnProductRoutes)
+app.use("/api/shipment",shipmentRoutes)
+app.use("/api/stockLog",stocklogRoutes)
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,35 +1,40 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model
+const purchaseOrderSchema = new mongoose.Schema(
+  {
+    suppliers_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Supplier",
+      default: null,
+    },
 
-function model(sequelize){
-    const attributes = {
-        purchase_orders_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        suppliers_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        warehouse_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        order_date:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        status:{
-            type:DataTypes.ENUM(
-                "pending",
-                "received",
-                "cancelled"
-            ),
-            defaultValue:"pending"
-        }
-    }
+    warehouse_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Warehouse",
+      default: null,
+    },
 
-    return sequelize.define("purchase_order",attributes,{timestamps:true})
-}
+    order_date: {
+      type: Date,
+      default: null,
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "pending",
+        "received",
+        "cancelled",
+      ],
+      default: "pending",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model(
+  "PurchaseOrder",
+  purchaseOrderSchema
+);

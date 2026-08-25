@@ -1,32 +1,108 @@
-const db = require("../_helper/db")
-const { Op } = require("sequelize")
+const PurchaseOrder = require("./purchase_orders.model");
+
+// ========================================
+// CREATE PURCHASE ORDER
+// ========================================
+const createPurchaseOrder = async (params) => {
+  try {
+    const purchaseOrder = await PurchaseOrder.create(params);
+
+    return purchaseOrder;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// READ ALL PURCHASE ORDERS
+// ========================================
+const getAllPurchaseOrders = async () => {
+  try {
+    const purchaseOrdersList = await PurchaseOrder.find()
+      .populate("suppliers_id")
+      .populate("warehouse_id");
+
+    return purchaseOrdersList;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// READ ONE PURCHASE ORDER
+// ========================================
+const getPurchaseOrder = async (id) => {
+  try {
+    const purchaseOrder = await PurchaseOrder.findById(id)
+      .populate("suppliers_id")
+      .populate("warehouse_id");
+
+    if (!purchaseOrder) {
+      return {
+        success: false,
+        message: "Purchase order not found",
+      };
+    }
+
+    return purchaseOrder;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// UPDATE PURCHASE ORDER
+// ========================================
+const updatePurchaseOrder = async (id, params) => {
+  try {
+    const purchaseOrder = await PurchaseOrder.findByIdAndUpdate(
+      id,
+      params,
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .populate("suppliers_id")
+      .populate("warehouse_id");
+
+    if (!purchaseOrder) {
+      return {
+        success: false,
+        message: "Purchase order not found",
+      };
+    }
+
+    return purchaseOrder;
+  } catch (error) {
+    return error;
+  }
+};
+
+// ========================================
+// DELETE PURCHASE ORDER
+// ========================================
+const deletePurchaseOrder = async (id) => {
+  try {
+    const purchaseOrder = await PurchaseOrder.findByIdAndDelete(id);
+
+    if (!purchaseOrder) {
+      return {
+        success: false,
+        message: "Purchase order not found",
+      };
+    }
+
+    return "Purchase order deleted successfully";
+  } catch (error) {
+    return error;
+  }
+};
 
 module.exports = {
-    createPurchaseOrders
-}
-
-async function createPurchaseOrders(params) {
-    try {
-        const {
-            suppliers_id,
-            warehouse_id,
-            order_date,
-            status,
-        } = params
-
-        const purchaseOrders = {
-            suppliers_id:suppliers_id,
-            warehouse_id:warehouse_id,
-            order_date:order_date,
-            status:status
-        }
-
-        console.log("*************purchaseOrder:",purchaseOrders);
-        if(!purchaseOrders) return "Value not come!!!"
-        await db.Purchase_Orders.create(purchaseOrders)
-        return {msg:"created successfully"}
-    } catch (error) {
-        console.log("error:",error);
-        return error
-    }
-}
+  createPurchaseOrder,
+  getAllPurchaseOrders,
+  getPurchaseOrder,
+  updatePurchaseOrder,
+  deletePurchaseOrder,
+};
