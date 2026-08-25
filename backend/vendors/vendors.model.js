@@ -1,51 +1,64 @@
-const { DataTypes } = require("sequelize")
+const mongoose = require("mongoose");
 
-module.exports = model
+const vendorSchema = new mongoose.Schema(
+  {
+    vendor_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
 
-function model(sequelize) {
-    const attributes = {
-        vendor_id:{
-            type: DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        vendor_name:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        vendor_email:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        vendor_password:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        vendor_address:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        vendor_mobile:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        vendor_company_name:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        profile_img_name:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        profile_path:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        role_id:{
-            type: DataTypes.INTEGER,
-            allowNull: true
-        }
-    }
+    vendor_email: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
+    },
 
-    return sequelize.define("vendors",attributes,{timestamps:true})
-}
+    vendor_password: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    vendor_address: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    vendor_mobile: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    vendor_company_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    profile_img_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    profile_path: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    role_id: {
+      type: Number,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Vendor", vendorSchema);

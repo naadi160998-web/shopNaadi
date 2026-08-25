@@ -1,23 +1,22 @@
-const { DataTypes } = require("sequelize")
+const mongoose = require("mongoose");
 
-module.exports = model
+const wishlistSchema = new mongoose.Schema(
+  {
+    customer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      default: null,
+    },
 
-function model(sequelize) {
-    const attributes = {
-        wishlist_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        customer_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        product_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        }
-    }
+    product_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-    return sequelize.define("wishlists",attributes,{timestamps:true})
-}
+module.exports = mongoose.model("Wishlist", wishlistSchema);

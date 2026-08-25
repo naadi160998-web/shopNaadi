@@ -1,129 +1,332 @@
 const express = require("express");
 const router = express.Router();
+
 const vendorServices = require("./vendors.service");
 const auth = require("../_Auth/auth");
-const multer = require("multer")
-const fs = require("fs")
-const path = require("path")
 
-module.exports = router
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
 
-router.get("/", getAll)
-router.post("/", createVendor)
-router.post("/login", login)
-router.post("/:id",auth,update)
-router.post("/vendorprofileimg/img/:id", auth, uploadVendorImg)
-router.delete("/:id",auth,deleteVendor)
+// ========================================
+// GET ALL VENDORS
+// ========================================
 
-async function getAll(req, res, next) {
-    try {
-        const result = await vendorServices.getAll();
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
+async function getAll(req, res) {
+  try {
+    const result = await vendorServices.getAll();
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function createVendor(req, res, next) {
-    try {
-        const data = await req.body
-        console.log("***************Data***************:",data);
-        
-        const result = await vendorServices.createVendors(data)
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
+// ========================================
+// CREATE VENDOR
+// ========================================
+
+async function createVendor(req, res) {
+  try {
+    const data = req.body;
+
+    console.log(
+      "*************** Data ***************:",
+      data
+    );
+
+    const result =
+      await vendorServices.createVendors(data);
+
+    return res.status(201).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function login(req, res, next) {
-    try {
-        const data = await req.body
-        const result = await vendorServices.login(data);
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
+// ========================================
+// LOGIN
+// ========================================
+
+async function login(req, res) {
+  try {
+    const data = req.body;
+
+    const result =
+      await vendorServices.login(data);
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function update(req,res,next) {
-    try {
-        const id = await req.params.id;
-        const data = await req.body
-        const result = await vendorServices.update(data,id)
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
+// ========================================
+// UPDATE VENDOR
+// ========================================
+
+async function update(req, res) {
+  try {
+    const id = req.params.id;
+    const data = req.body;
+
+    const result =
+      await vendorServices.update(data, id);
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendor not found",
+      });
     }
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function uploadVendorImg(req, res, next) {
-    try {
-        const id = await req.params.id;
-        const uploadPath = path.join(process.cwd(), "profiles/vendorProfiles", id);
-        
-        // Check folder exists
-        if (!fs.existsSync(uploadPath)) {
-            return res.status(404).json({ error: "Vendor folder not found" });
+// ========================================
+// UPLOAD VENDOR PROFILE IMAGE
+// ========================================
+
+async function uploadVendorImg(req, res) {
+  try {
+    const id = req.params.id;
+
+    // ========================================
+    // CHECK MONGODB OBJECT ID
+    // ========================================
+
+    const mongoose = require("mongoose");
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid vendor ID",
+      });
+    }
+
+    // ========================================
+    // VENDOR UPLOAD PATH
+    // ========================================
+
+    const uploadPath = path.join(
+      process.cwd(),
+      "profiles",
+      "vendorProfiles",
+      id
+    );
+
+    // ========================================
+    // CHECK FOLDER
+    // ========================================
+
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, {
+        recursive: true,
+      });
+    }
+
+    // ========================================
+    // FIND VENDOR
+    // ========================================
+
+    const vendor =
+      await vendorServices.findById(id);
+
+    if (!vendor) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendor not found",
+      });
+    }
+
+    // ========================================
+    // MULTER STORAGE
+    // ========================================
+
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, uploadPath);
+      },
+
+      filename: (req, file, cb) => {
+        const fileName =
+          Date.now() +
+          "-" +
+          file.originalname.replace(/\s+/g, "-");
+
+        cb(null, fileName);
+      },
+    });
+
+    // ========================================
+    // FILE FILTER
+    // ========================================
+
+    const fileFilter = (req, file, cb) => {
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(
+          new Error("Only image files are allowed"),
+          false
+        );
+      }
+    };
+
+    // ========================================
+    // MULTER
+    // ========================================
+
+    const upload = multer({
+      storage,
+      limits: {
+        fileSize: 10 * 1024 * 1024,
+      },
+      fileFilter,
+    }).single("image");
+
+    // ========================================
+    // UPLOAD
+    // ========================================
+
+    upload(req, res, async (err) => {
+      try {
+        if (err) {
+          return res.status(400).json({
+            success: false,
+            message: err.message,
+          });
         }
 
-        // 1. Find user
-        const user = await vendorServices.findById(id);
-
-        // 2. Delete old file if exists
-        if (user.profile_img_name) {
-            const oldPath = path.join(process.cwd(), "profiles/vendorProfiles", id, user.profile_img_name);
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
+        if (!req.file) {
+          return res.status(400).json({
+            success: false,
+            message: "Please select an image",
+          });
         }
 
-        //  Storage config
-        const storage = multer.diskStorage({
-            destination: (req, file, cb) => {
-                cb(null, uploadPath);
-            },
-            filename: (req, file, cb) => {
-                cb(null, Date.now() + "-" + file.originalname);
-            }
+        console.log("req.file:", req.file);
+
+        // ========================================
+        // DELETE OLD IMAGE
+        // ========================================
+
+        if (vendor.profile_img_name) {
+          const oldPath = path.join(
+            uploadPath,
+            vendor.profile_img_name
+          );
+
+          if (fs.existsSync(oldPath)) {
+            fs.unlinkSync(oldPath);
+          }
+        }
+
+        // ========================================
+        // UPDATE MONGODB
+        // ========================================
+
+        const result =
+          await vendorServices.updateVendor(
+            req.file,
+            id
+          );
+
+        return res.status(200).json({
+          success: true,
+          data: result,
         });
-        //  File filter
-        const fileFilter = (req, file, cb) => {
-            if (file.mimetype.startsWith("image/")) {
-                cb(null, true);
-            } else {
-                cb(new Error("Images only allowed"));
-            }
-        };
-        const upload = multer({
-            storage,
-            limits: { fileSize: 10 * 1024 * 1024 },
-            fileFilter
-        }).single("image");
+      } catch (error) {
+        console.log("Upload error:", error);
 
-        upload(req, res, async function (err) {
-
-            if (err) {
-                return res.status(400).json({ error: err.message });
-            }
-
-            console.log("req.file:",req.file);
-            
-            const result = await vendorServices.updateVendor(req.file,Number(id))
-            res.json(result);
+        return res.status(500).json({
+          success: false,
+          message: error.message,
         });
-    } catch (error) {
-        console.log("error:", error);
-        return res.json(error)
-    }
+      }
+    });
+  } catch (error) {
+    console.log("error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function deleteVendor(req,res,next) {
-    try {
-        const id = await req.params.id;
-        const result = await vendorServices.deleteVendor(id)
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
+// ========================================
+// DELETE VENDOR
+// ========================================
+
+async function deleteVendor(req, res) {
+  try {
+    const id = req.params.id;
+
+    const result =
+      await vendorServices.deleteVendor(id);
+
+    if (!result.complete) {
+      return res.status(404).json(result);
     }
+
+    return res.status(200).json({
+      success: true,
+      ...result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
+
+module.exports = router;
+
+// ========================================
+// ROUTES
+// ========================================
+
+router.get("/", getAll);
+
+router.post("/", createVendor);
+
+router.post("/login", login);
+
+router.put("/:id", auth, update);
+
+router.post(
+  "/vendorprofileimg/img/:id",
+  auth,
+  uploadVendorImg
+);
+
+router.delete("/:id", auth, deleteVendor);

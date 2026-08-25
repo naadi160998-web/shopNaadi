@@ -23,6 +23,10 @@ const refundRoutes = require("./refunds/refunds.controller")
 const returnProductRoutes = require("./return_product/return_product.controller")
 const shipmentRoutes = require("./shipment/shipment.controller")
 const stocklogRoutes = require("./stock_logs/stock_logs.controller")
+const suppliersRoutes = require("./suppliers/suppliers.controller")
+const vendorRoutes = require("./vendors/vendors.controller")
+const warehouseRoutes = require("./warehouse/warehouse.controller")
+const wishlistRoutes = require("./wishlist/wishlist.controller")
 
 const app = express();
 
@@ -56,6 +60,10 @@ app.use("/api/refund",refundRoutes)
 app.use("/api/returnProduct",returnProductRoutes)
 app.use("/api/shipment",shipmentRoutes)
 app.use("/api/stockLog",stocklogRoutes)
+app.use("/api/suppliers",suppliersRoutes)
+app.use("/api/vendors",vendorRoutes)
+app.use("/api/warehouse",warehouseRoutes)
+app.use("/api/wishlist",wishlistRoutes)
 
 const PORT = process.env.PORT || 5000;
 

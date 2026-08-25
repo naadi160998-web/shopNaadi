@@ -1,77 +1,146 @@
-const express = require("express")
+const express = require("express");
+const warehouseServices = require("./warehouse.service");
+
 const router = express.Router();
-const warehouseService = require("./warehouse.service");
-const auth = require("../_Auth/auth")
 
-// routes
-// router.post("/",auth,createWarehouses)
-router.post("/",createWarehouses)
-router.get("/:id",auth,findById)
-// router.get("/",auth,getAllWarehouses)
-router.get("/",getAllWarehouses)
-// router.post("/update/:id",auth,updateWarehouses)
-router.put("/update/:id",updateWarehouses)
-// router.delete("/delete/:product_id/:vendor_id",auth,deleteWarehouses)
-router.post("/delete/:warehouse_id",deleteWarehouses)
+// ========================================
+// CREATE WAREHOUSE
+// ========================================
+const createWarehouse = async (req, res) => {
+  try {
+    const warehouse = req.body;
 
-module.exports = router
+    const newWarehouse =
+      await warehouseServices.createWarehouse(warehouse);
 
-// routes function
-async function createWarehouses(req,res,next) {
-    try {
-        const data = await req.body
-        console.log("****************data*****************:",data);
-        
-        const result = await warehouseService.createWarehouses(data);
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
-}
+    res.status(201).json({
+      success: true,
+      data: newWarehouse,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-async function getAllWarehouses(req,res,next) {
-    try {
-        const result = await warehouseService.getAllWarehouses()
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
-}
-async function updateWarehouses(req,res,next) {
-    try {
-        
-        const data = await req.body
-        const warehouse_id = await req.params.id
-        const result = await warehouseService.updateWarehouses(data,warehouse_id)
-        return res.json(result);
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
-    }
-}
-async function deleteWarehouses(req,res,next) {
-    try {
-        console.log("req.params:",req.params);
-        
-        const {warehouse_id} = await req.params
-        const objs = await req.body
-        const result = await warehouseService.deleteWarehouses(warehouse_id);
-        
-        return res.json(result);
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
-    }
-}
+// ========================================
+// READ ALL WAREHOUSES
+// ========================================
+const getAllWarehouses = async (req, res) => {
+  try {
+    const warehousesList =
+      await warehouseServices.getAllWarehouses();
 
-async function findById(req,res,next) {
-    try {
-        console.log("********id****************:",req.params);
-        const id = await req.params.id
-        const result = await warehouseService.findById(id)
-        return res.json(result)
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
+    res.status(200).json({
+      success: true,
+      data: warehousesList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// READ ONE WAREHOUSE
+// ========================================
+const getWarehouse = async (req, res) => {
+  try {
+    const warehouse =
+      await warehouseServices.getWarehouse(req.params.id);
+
+    if (!warehouse) {
+      return res.status(404).json({
+        success: false,
+        message: "Warehouse not found",
+      });
     }
-}
+
+    res.status(200).json({
+      success: true,
+      data: warehouse,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// UPDATE WAREHOUSE
+// ========================================
+const updateWarehouse = async (req, res) => {
+  try {
+    const warehouse =
+      await warehouseServices.updateWarehouse(
+        req.params.id,
+        req.body
+      );
+
+    if (!warehouse) {
+      return res.status(404).json({
+        success: false,
+        message: "Warehouse not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: warehouse,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// DELETE WAREHOUSE
+// ========================================
+const deleteWarehouse = async (req, res) => {
+  try {
+    const result =
+      await warehouseServices.deleteWarehouse(req.params.id);
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Warehouse not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Warehouse deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ========================================
+// ROUTES
+// ========================================
+
+router.post("/", createWarehouse);
+
+router.get("/", getAllWarehouses);
+
+router.get("/:id", getWarehouse);
+
+router.put("/:id", updateWarehouse);
+
+router.delete("/:id", deleteWarehouse);
+
+module.exports = router;

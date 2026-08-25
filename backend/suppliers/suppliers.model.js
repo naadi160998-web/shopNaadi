@@ -1,53 +1,68 @@
-const { DataTypes } = require("sequelize")
+const mongoose = require("mongoose");
 
-module.exports = model
+const suppliersSchema = new mongoose.Schema(
+  {
+    suppliers_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
 
-function model(sequelize){
-    const attributes = {
-        suppliers_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        suppliers_name:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        contact_person:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        email:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        mobile:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        address:{
-            type:DataTypes.TEXT,
-            allowNull:true
-        },
-        city:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        state:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        pincode:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        status:{
-            type:DataTypes.ENUM(
-                "active",
-                "inactive"
-            ),
-            defaultValue:"active"
-        }
-    }
-    return sequelize.define("Suppliers",attributes,{timestamps:true})
-}
+    contact_person: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
+    },
+
+    mobile: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    city: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    state: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    pincode: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "active",
+        "inactive",
+      ],
+      default: "active",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Supplier", suppliersSchema);

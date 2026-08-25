@@ -1,31 +1,33 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model;
+const warehouseSchema = new mongoose.Schema(
+  {
+    product_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      default: null,
+    },
 
-function model(sequelize){
-    const attributes = {
-        warehouse_id : {
-            type: DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        product_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        qty:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        warehouse_name:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        city:{
-            type: DataTypes.STRING,
-            allowNull:true
-        }
-    };
+    qty: {
+      type: Number,
+      default: 0,
+    },
 
-    return sequelize.define('warehouses',attributes,{timestamps: true})
-}
+    warehouse_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    city: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+module.exports = mongoose.model("Warehouse", warehouseSchema);
