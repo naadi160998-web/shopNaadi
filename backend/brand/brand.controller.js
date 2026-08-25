@@ -1,58 +1,103 @@
 const express = require("express");
-const router = express();
 const brandServices = require("./brand.service");
-// const auth = require("../_Auth/auth")
+const router = express.Router();
 
-module.exports = router
+// CREATE
+const createBrand = async (req, res) => {
+  try {
+    const brand = await req.body;
+    const newBrand = await brandServices.createBrand(brand);
+    res.status(201).json({
+      success: true,
+      data: newBrand,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-router.post("/",createBrand)
-router.get("/",getAllBrands)
-router.put("/update/:id",updateBrands)
-router.post("/delete/:brand_id",deleteBrands)
+// READ ALL
+const getAllBrands = async (req, res) => {
+  try {
+    const brandsList = await brandServices.getAllBrands();
 
-async function createBrand(req,res,next) {
-    try {
-        const data = await req.body;
-        const category = await brandServices.createBrands(data);
-        res.status(201).json(category);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+    res.json({
+      success: true,
+      data: brandsList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// READ ONE
+const getBrand = async (req, res) => {
+  try {
+    const brand = await brandServices.getBrand(req.params.id);
+
+    if (!brand) {
+      return res.status(404).json({
+        success: false,
+        message: "Brand not found",
+      });
     }
-}
 
-async function getAllBrands(req,res,next) {
-    try {
-        const data = await req.body;
-        const category = await brandServices.getAllBrands(data);
-        res.status(201).json(category);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-}
+    res.json({
+      success: true,
+      data: brand,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-async function updateBrands(req,res,next) {
-    try {
-        
-        const data = await req.body
-        const brand_id = await req.params.id
-        const result = await brandServices.updateBrands(data,brand_id)
-        return res.json(result);
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
-    }
-}
-async function deleteBrands(req,res,next) {
-    try {
-        console.log("req.params:",req.params);
-        
-        const {brand_id} = await req.params
-        const objs = await req.body
-        const result = await brandServices.deleteBrands(brand_id);
-        
-        return res.json(result);
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
-    }
-}
+// UPDATE
+const updateBrand = async (req, res) => {
+  try {
+    const brand = await brandServices.updateBrand(req.params.id, req.body);
+
+    res.json({
+      success: true,
+      data: brand,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// DELETE
+const deleteBrand = async (req, res) => {
+  try {
+    await brandServices.deleteBrand(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Brand deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = router;
+
+router.post("/", createBrand);
+router.get("/", getAllBrands);
+router.get("/:id", getBrand);
+router.put("/:id", updateBrand);
+router.delete("/:id", deleteBrand);

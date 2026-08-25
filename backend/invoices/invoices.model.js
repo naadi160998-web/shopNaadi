@@ -1,76 +1,92 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model;
+const invoiceSchema = new mongoose.Schema(
+  {
+    customer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      default: null,
+    },
 
-function model(sequelize){
-    const attributes = {
-        invoice_id : {
-            type: DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        customer_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        order_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        billing_address_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        invoice_number:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        invoice_date:{
-            type: DataTypes.DATE,
-            allowNull:true
-        },
-        due_date:{
-            type: DataTypes.DATE,
-            allowNull:true
-        },
-        invoice_status:{
-            type:DataTypes.ENUM(
-                "Paid",
-                "Un Paid",
-                "Partially Paid",
-                "Cancelled",
-                "Refunded"
-            )
-        },
-        sub_total:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        discount_amount:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        tax_amount:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        shipping_charges:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        total_amount:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        paid_amount:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        notes:{
-            type: DataTypes.TEXT,
-            allowNull:true
-        },
-    };
+    order_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+      default: null,
+    },
 
-    return sequelize.define('invoice',attributes,{timestamps: true})
-}
+    billing_address_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BillingAddress",
+      default: null,
+    },
+
+    invoice_number: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    invoice_date: {
+      type: Date,
+      default: null,
+    },
+
+    due_date: {
+      type: Date,
+      default: null,
+    },
+
+    invoice_status: {
+      type: String,
+      enum: [
+        "Paid",
+        "Un Paid",
+        "Partially Paid",
+        "Cancelled",
+        "Refunded",
+      ],
+      default: "Un Paid",
+    },
+
+    sub_total: {
+      type: String,
+      default: null,
+    },
+
+    discount_amount: {
+      type: String,
+      default: null,
+    },
+
+    tax_amount: {
+      type: String,
+      default: null,
+    },
+
+    shipping_charges: {
+      type: String,
+      default: null,
+    },
+
+    total_amount: {
+      type: String,
+      default: null,
+    },
+
+    paid_amount: {
+      type: String,
+      default: null,
+    },
+
+    notes: {
+      type: String,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+    collection: "invoices",
+  }
+);
+
+module.exports = mongoose.model("Invoice", invoiceSchema);

@@ -1,71 +1,92 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model
+const productSchema = new mongoose.Schema(
+  {
+    product_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
 
-function model(sequelize){
-    const attributes = {
-        product_id:{
-            type: DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey: true
-        },
-        product_name:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        product_desc:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        old_price:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        new_price:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        product_gender:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        product_dealer:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        product_discount:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        product_size:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        product_color:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        product_brand:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        product_type:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        supplier_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        vendor_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        category_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        }
-    };
+    product_desc: {
+      type: String,
+      default: null,
+      trim: true,
+    },
 
-    return sequelize.define('products',attributes,{timestamps: true})
-}
+    old_price: {
+      type: Number,
+      default: 0,
+    },
+
+    new_price: {
+      type: Number,
+      default: 0,
+    },
+
+    product_gender: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    product_dealer: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    product_discount: {
+      type: Number,
+      default: 0,
+    },
+
+    product_size: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    product_color: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    product_brand: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    product_type: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    supplier_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Supplier",
+      default: null,
+    },
+
+    vendor_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Vendor",
+      default: null,
+    },
+
+    category_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+    collection: "products",
+  }
+);
+
+module.exports = mongoose.model("Product", productSchema);

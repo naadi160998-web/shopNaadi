@@ -1,63 +1,80 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model;
+const billingAddressSchema = new mongoose.Schema(
+  {
+    customer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "customer",
+      default: null,
+    },
 
-function model(sequelize){
-    const attributes = {
-        billing_address_id : {
-            type: DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        customer_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        order_id:{
-            type: DataTypes.INTEGER,
-            allowNull:true
-        },
-        company_name:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        email:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        phone:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        address:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        city:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        state:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        country:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        postal_code:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        gst_number:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        address_type:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-    };
+    order_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "order",
+      default: null,
+    },
 
-    return sequelize.define('billingaddress',attributes,{timestamps: true})
-}
+    company_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    phone: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    address: {
+      type: String,
+      default: null,
+    },
+
+    city: {
+      type: String,
+      default: null,
+    },
+
+    state: {
+      type: String,
+      default: null,
+    },
+
+    country: {
+      type: String,
+      default: null,
+    },
+
+    postal_code: {
+      type: String,
+      default: null,
+    },
+
+    gst_number: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    address_type: {
+      type: String,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+    collection: "billingaddresses",
+  }
+);
+
+module.exports = mongoose.model(
+  "BillingAddress",
+  billingAddressSchema
+);

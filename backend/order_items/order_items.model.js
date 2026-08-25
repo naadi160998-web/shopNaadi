@@ -1,39 +1,44 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model
+const orderItemsSchema = new mongoose.Schema(
+  {
+    order_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+      required: true,
+    },
 
-function model(sequelize){
-    const attributes = {
-        order_items_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        order_id:{
-            type:DataTypes.INTEGER,
-            allowNull:false,
-        },
-        product_id:{
-            type:DataTypes.INTEGER,
-            allowNull:false
-        },
-        warehouse_id:{
-            type:DataTypes.INTEGER,
-            allowNull:false
-        },
-        quantity:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        price:{
-            type:DataTypes.STRING,
-            allowNull:true
-        },
-        subTotal:{
-            type:DataTypes.STRING,
-            allowNull:true
-        }
-    }
+    product_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
 
-    return sequelize.define("Order_Items",attributes,{timestamps:true})
-}
+    warehouse_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Warehouse",
+      required: true,
+    },
+
+    quantity: {
+      type: Number,
+      default: 1,
+    },
+
+    price: {
+      type: Number,
+      default: 0,
+    },
+
+    subTotal: {
+      type: Number,
+      default: 0,
+    },
+  },
+  {
+    timestamps: true,
+    collection: "order_items",
+  }
+);
+
+module.exports = mongoose.model("OrderItem", orderItemsSchema);

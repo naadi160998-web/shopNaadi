@@ -1,28 +1,28 @@
-const { DataTypes } = require("sequelize")
+const mongoose = require("mongoose");
 
-module.exports = model
+const cartSchema = new mongoose.Schema(
+    {
+        customer_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "customer",
+            default: null,
+        },
 
-function model(sequelize) {
-    const attrubutes = {
-        cart_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
+        product_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "product",
+            default: null,
         },
-        customer_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
+
+        quantity: {
+            type: Number,
+            default: 1,
         },
-        product_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        quantity:{
-            type:DataTypes.INTEGER,
-            allowNull:true,
-            defaultValue:1
-        }
+    },
+    {
+        timestamps: true,
+        collection: "carts",
     }
+);
 
-    return sequelize.define("cart",attrubutes,{timestamps:true})
-}
+module.exports = mongoose.model("Cart", cartSchema);

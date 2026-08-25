@@ -1,29 +1,110 @@
-const express = require("express")
-const routes = express.Router()
-const invoiceService = require("./invoices.service")
-const auth=require("../_Auth/auth")
+const express = require("express");
+const invoiceServices = require("./invoices.service");
 
-module.exports = routes
+const router = express.Router();
 
-routes.post("/",createInvoice)
-routes.get("/",getAllInvoices)
+// CREATE
+const createInvoice = async (req, res) => {
+  try {
+    const invoice = req.body;
 
-async function createInvoice(req,res,next) {
-    try {
-        const collections = await req.body;
-        const result = await invoiceService.createInvoice(collections)
-        return res.json(result)
-    } catch (error) {
-        console.log(error);
-        return res.json(error)
+    const newInvoice = await invoiceServices.createInvoice(invoice);
+
+    res.status(201).json({
+      success: true,
+      data: newInvoice,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// READ ALL
+const getAllInvoices = async (req, res) => {
+  try {
+    const invoicesList = await invoiceServices.getAllInvoices();
+
+    res.json({
+      success: true,
+      data: invoicesList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// READ ONE
+const getInvoice = async (req, res) => {
+  try {
+    const invoice = await invoiceServices.getInvoice(req.params.id);
+
+    if (!invoice) {
+      return res.status(404).json({
+        success: false,
+        message: "Invoice not found",
+      });
     }
-}
 
-async function getAllInvoices(req, res, next) {
-    try {
-        const data = await invoiceService.getAllInvoices()
-        return res.json(data)
-    } catch (error) {
-        return res.json(error)
-    }
-}
+    res.json({
+      success: true,
+      data: invoice,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// UPDATE
+const updateInvoice = async (req, res) => {
+  try {
+    const invoice = await invoiceServices.updateInvoice(
+      req.params.id,
+      req.body
+    );
+
+    res.json({
+      success: true,
+      data: invoice,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// DELETE
+const deleteInvoice = async (req, res) => {
+  try {
+    await invoiceServices.deleteInvoice(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Invoice deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = router;
+
+// Routes
+router.post("/", createInvoice);
+router.get("/", getAllInvoices);
+router.get("/:id", getInvoice);
+router.put("/:id", updateInvoice);
+router.delete("/:id", deleteInvoice);

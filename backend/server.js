@@ -6,6 +6,18 @@ const cors = require("cors");
 const connectDB = require("./_helper/db");
 const userRoutes = require("./users/users.controller");
 const roleRoutes = require("./roles/role.controller");
+const billingAddressRoutes = require("./billing_address/billing_address.controller");
+const brandRoutes = require("./brand/brand.controller");
+const cartRoutes = require("./cart/cart.controller");
+const categoryRoutes = require("./Category/Category.controller");
+const customerRoutes = require("./customer/customer.controller");
+const deliveryRoutes = require("./deliveries/deliveries.controller");
+const invoiceRoutes = require("./invoices/invoices.controller");
+const ordersRoutes = require("./orders/orders.controller")
+const orderitemsRoutes = require("./order_items/order_items.controller")
+const paymentRoutes = require("./payment/payment.controller")
+const productRoutes = require("./products/product.controller")
+const productImgRoutes = require("./imgUpload/productimgs.controller")
 
 const app = express();
 
@@ -22,6 +34,19 @@ app.get("/", (req, res) => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/roles", roleRoutes);
+app.use("/api/billingaddresses", billingAddressRoutes);
+app.use("/api/brands", brandRoutes);
+app.use("/api/carts", cartRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/customers", customerRoutes);
+app.use("/api/deliveries", deliveryRoutes);
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/orders", ordersRoutes);
+app.use("/api/orderitems", orderitemsRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/product",productRoutes)
+app.use("/api/productimgs",productImgRoutes)
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

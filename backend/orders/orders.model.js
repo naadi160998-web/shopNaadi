@@ -1,43 +1,47 @@
-const { DataTypes, UniqueConstraintError } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model;
+const orderSchema = new mongoose.Schema(
+  {
+    order_number: {
+      type: String,
+      default: null,
+      unique: true,
+      trim: true,
+    },
 
-function model(sequelize){
-    const attributes = {
-        order_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        order_number:{
-            type:DataTypes.STRING,
-            allowNull:true,
-            unique:true
-        },
-        customer_id:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        date:{
-            type:DataTypes.STRING,
-            allowNull:true,
-        },
-        total_amount:{
-            type:DataTypes.INTEGER,
-            allowNull:true
-        },
-        status:{
-            type:DataTypes.ENUM(
-                "Pending",
-                "Confirmed",
-                "Packed",
-                "Shipped",
-                "Delivered",
-                "Cancelled"
-            ),
-            defaultValue:"Pending"
-        }
-    }
+    customer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      default: null,
+    },
 
-    return sequelize.define("orders",attributes,{timestamps:true})
-}
+    date: {
+      type: Date,
+      default: null,
+    },
+
+    total_amount: {
+      type: Number,
+      default: 0,
+    },
+
+    status: {
+      type: String,
+      enum: [
+        "Pending",
+        "Confirmed",
+        "Packed",
+        "Shipped",
+        "Delivered",
+        "Cancelled",
+      ],
+      default: "Pending",
+    },
+  },
+  {
+    timestamps: true,
+    collection: "orders",
+  }
+);
+
+module.exports = mongoose.model("Order", orderSchema);

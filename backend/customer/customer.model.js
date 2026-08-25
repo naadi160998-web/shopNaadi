@@ -1,43 +1,50 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = model
+const customerSchema = new mongoose.Schema(
+  {
+    customer_name: {
+      type: String,
+      default: null,
+      trim: true,
+    },
 
-function model(sequelize){
-    const attributes = {
-        customer_id:{
-            type:DataTypes.INTEGER,
-            autoIncrement:true,
-            primaryKey:true
-        },
-        customer_name:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        customer_email:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        customer_password:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        customer_address:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        customer_mobile:{
-            type:DataTypes.STRING,
-            autoNull:true
-        },
-        profile_img_name:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-        profile_path:{
-            type: DataTypes.STRING,
-            allowNull:true
-        },
-    }
+    customer_email: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
+    },
 
-    return sequelize.define("customers",attributes,{timestamps:true})
-}
+    customer_password: {
+      type: String,
+      default: null,
+    },
+
+    customer_address: {
+      type: String,
+      default: null,
+    },
+
+    customer_mobile: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+
+    profile_img_name: {
+      type: String,
+      default: null,
+    },
+
+    profile_path: {
+      type: String,
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+    collection: "customers",
+  }
+);
+
+module.exports = mongoose.model("Customer", customerSchema);

@@ -1,29 +1,114 @@
-const express = require("express")
-const routes = express.Router()
-const paymentService = require("./payment.service")
-const auth=require("../_Auth/auth")
+const express = require("express");
+const paymentServices = require("./payment.service");
 
-module.exports = routes
+const router = express.Router();
 
-routes.post("/",createPayment)
-routes.get("/",getAllPayment)
+// CREATE
+const createPayment = async (req, res) => {
+  try {
+    const payment = req.body;
 
-async function createPayment(req,res,next) {
-    try {
-        const collections = await req.body;
-        const result = await paymentService.createPayment(collections)
-        return res.json(result)
-    } catch (error) {
-        console.log(error);
-        return res.json(error)
+    const newPayment =
+      await paymentServices.createPayment(payment);
+
+    res.status(201).json({
+      success: true,
+      data: newPayment,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// READ ALL
+const getAllPayments = async (req, res) => {
+  try {
+    const paymentsList =
+      await paymentServices.getAllPayments();
+
+    res.json({
+      success: true,
+      data: paymentsList,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// READ ONE
+const getPayment = async (req, res) => {
+  try {
+    const payment =
+      await paymentServices.getPayment(req.params.id);
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment not found",
+      });
     }
-}
 
-async function getAllPayment(req, res, next) {
-    try {
-        const data = await paymentService.getAllPayment()
-        return res.json(data)
-    } catch (error) {
-        return res.json(error)
-    }
-}
+    res.json({
+      success: true,
+      data: payment,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// UPDATE
+const updatePayment = async (req, res) => {
+  try {
+    const payment =
+      await paymentServices.updatePayment(
+        req.params.id,
+        req.body
+      );
+
+    res.json({
+      success: true,
+      data: payment,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// DELETE
+const deletePayment = async (req, res) => {
+  try {
+    await paymentServices.deletePayment(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Payment deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = router;
+
+// Routes
+router.post("/", createPayment);
+router.get("/", getAllPayments);
+router.get("/:id", getPayment);
+router.put("/:id", updatePayment);
+router.delete("/:id", deletePayment);

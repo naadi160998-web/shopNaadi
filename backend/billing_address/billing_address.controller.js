@@ -1,29 +1,103 @@
-const express = require("express")
-const routes = express.Router()
-const billingAddressService = require("./billing_address.service")
-const auth=require("../_Auth/auth")
+const express = require("express");
+const billingAddressServices = require("./billing_address.service");
+const router = express.Router();
 
-module.exports = routes
+// CREATE
+const createBilling = async (req, res) => {
+  try {
+    const billing = await req.body;
+    const newBilling = await billingAddressServices.createBilling(billing);
+    res.status(201).json({
+      success: true,
+      data: newBilling,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-routes.post("/",createBilling)
-routes.get("/",getAllBilling)
+// READ ALL
+const getAllBilling = async (req, res) => {
+  try {
+    const billingAddresses = await billingAddressServices.getAllBilling();
 
-async function createBilling(req,res,next) {
-    try {
-        const collections = await req.body;
-        const result = await billingAddressService.createBilling(collections)
-        return res.json(result)
-    } catch (error) {
-        console.log(error);
-        return res.json(error)
+    res.json({
+      success: true,
+      data: billingAddresses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// READ ONE
+const getBilling = async (req, res) => {
+  try {
+    const billing = await billingAddressServices.getBilling(req.params.id);
+
+    if (!billing) {
+      return res.status(404).json({
+        success: false,
+        message: "Billing address not found",
+      });
     }
-}
 
-async function getAllBilling(req, res, next) {
-    try {
-        const data = await billingAddressService.getAllBilling()
-        return res.json(data)
-    } catch (error) {
-        return res.json(error)
-    }
-}
+    res.json({
+      success: true,
+      data: billing,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// UPDATE
+const updateBilling = async (req, res) => {
+  try {
+    const billing = await billingAddressServices.updateBilling(req.params.id, req.body);
+
+    res.json({
+      success: true,
+      data: billing,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// DELETE
+const deleteBilling = async (req, res) => {
+  try {
+    await billingAddressServices.deleteBilling(req.params.id);
+
+    res.json({
+      success: true,
+      message: "Billing address deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = router;
+
+router.post("/", createBilling);
+router.get("/", getAllBilling);
+router.get("/:id", getBilling);
+router.put("/:id", updateBilling);
+router.delete("/:id", deleteBilling);

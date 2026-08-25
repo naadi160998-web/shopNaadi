@@ -1,97 +1,245 @@
-const express = require("express")
+const express = require("express");
 const router = express.Router();
 const productService = require("./product.service");
-const auth = require("../_Auth/auth")
-const fs = require("fs")
-const path = require("path")
 
-// routes
-// router.post("/",auth,createProducts)
-router.post("/",createProducts)
-// router.post("/:id",auth,getProductUserId)
-router.get("/:id",getProductUserId)
-router.get("/:id",auth,findById)
-router.get("/",auth,getAllProducts)
-// router.post("/update/:id",auth,updateProduct)
-router.put("/update/:id",updateProduct)
-// router.delete("/delete/:product_id/:vendor_id",auth,deleteProducts)
-router.post("/delete/:product_id/:vendor_id",deleteProducts)
+// ========================================
+// CREATE PRODUCT
+// ========================================
 
-module.exports = router
+async function createProduct(req, res, next) {
+  try {
+    const data = req.body;
 
-// routes function
-async function createProducts(req,res,next) {
-    try {
-        const data = await req.body
-        console.log("****************data*****************:",data);
-        
-        const result = await productService.createProducts(data);
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
+    console.log(
+      "**************** data *****************:",
+      data
+    );
+
+    const result = await productService.createProduct(data);
+
+    return res.status(201).json(result);
+
+  } catch (error) {
+    console.log("Create product controller error:", error);
+
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function getProductUserId(req,res,next) {
-    try {
-        // console.log("***************id:",req.params.id);
-        const id = await req.params.id
-        // console.log("***************id:",id);
-        
-        const result = await productService.getProductUserId(Number(id))
-        // console.log("9999999999999999999999result:",JSON.stringify(result));
-        
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
+
+// ========================================
+// GET PRODUCTS BY VENDOR ID
+// ========================================
+
+async function getProductUserId(req, res, next) {
+  try {
+    const id = req.params.id;
+
+    console.log(
+      "*************** vendor id:",
+      id
+    );
+
+    const result =
+      await productService.getProductUserId(id);
+
+    return res.json(result);
+
+  } catch (error) {
+    console.log(
+      "Get products by vendor error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function getAllProducts(req,res,next) {
-    try {
-        const result = await productService.getAllProducts()
-        return res.json(result)
-    } catch (error) {
-        return res.json(error)
-    }
-}
-async function updateProduct(req,res,next) {
-    try {
-        // console.log("req.body",req.body)
-        // console.log("id:",req.params.id);
-        
-        const data = await req.body
-        const product_id = await req.params.id
-        const result = await productService.updateProducts(data,product_id)
-        return res.json(result);
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
-    }
-}
-async function deleteProducts(req,res,next) {
-    try {
-        console.log("req.params:",req.params);
-        
-        const {product_id,vendor_id} = await req.params
-        const objs = await req.body
-        const result = await productService.deleteProducts(product_id,vendor_id,objs);
-        // console.log("imgIds:",imgIds);
-        return res.json(result);
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
-    }
+
+// ========================================
+// GET ALL PRODUCTS
+// ========================================
+
+async function getAllProducts(req, res, next) {
+  try {
+
+    const result =
+      await productService.getAllProducts();
+
+    return res.json(result);
+
+  } catch (error) {
+
+    console.log(
+      "Get all products error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
 
-async function findById(req,res,next) {
-    try {
-        console.log("********id****************:",req.params);
-        const id = await req.params.id
-        const result = await productService.findById(id)
-        return res.json(result)
-    } catch (error) {
-        console.log("error:",error);
-        return res.json(error)
-    }
+
+// ========================================
+// UPDATE PRODUCT
+// ========================================
+
+async function updateProduct(req, res, next) {
+  try {
+
+    const data = req.body;
+
+    const product_id = req.params.id;
+
+    console.log(
+      "*************** product id:",
+      product_id
+    );
+
+    console.log(
+      "*************** update data:",
+      data
+    );
+
+    const result =
+      await productService.updateProducts(
+        data,
+        product_id
+      );
+
+    return res.json(result);
+
+  } catch (error) {
+
+    console.log(
+      "Update product error:",
+      error
+    );
+
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
 }
+
+
+// ========================================
+// DELETE PRODUCT
+// ========================================
+
+async function deleteProduct(req, res, next) {
+  try {
+
+    console.log(
+      "req.params:",
+      req.params
+    );
+
+    const {
+      product_id,
+      vendor_id
+    } = req.params;
+
+    const obj = req.body;
+
+    const result =
+      await productService.deleteProducts(
+        product_id,
+        vendor_id,
+        obj
+      );
+
+    return res.json(result);
+
+  } catch (error) {
+
+    console.log(
+      "Delete product error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+
+// ========================================
+// GET PRODUCT BY ID
+// ========================================
+
+async function findById(req, res, next) {
+  try {
+
+    console.log(
+      "******** product id ********:",
+      req.params.id
+    );
+
+    const id = req.params.id;
+
+    const result =
+      await productService.findById(id);
+
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: result,
+    });
+
+  } catch (error) {
+
+    console.log(
+      "Find product error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+module.exports = router;
+
+
+// ========================================
+// ROUTES
+// ========================================
+
+// CREATE PRODUCT
+router.post("/", createProduct);
+
+// GET PRODUCTS BY VENDOR ID
+router.get("/vendor/:id", getProductUserId);
+
+// GET ALL PRODUCTS
+router.get("/", getAllProducts);
+
+// UPDATE PRODUCT
+router.put("/update/:id", updateProduct);
+
+// DELETE PRODUCT
+router.post("/delete/:product_id/:vendor_id", deleteProduct);
+
+// GET PRODUCT BY ID
+router.get("/:id", findById);

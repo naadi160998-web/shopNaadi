@@ -1,28 +1,90 @@
-const db = require("../_helper/db")
+const billingAddress = require("./billing_address.model");
 
-module.exports={
-    createBilling,
-    getAllBilling
-}
+// CREATE
+const createBilling = async (params) => {
+  try {
+    const billing = await billingAddress.create(params);
+    return billing;
+  } catch (error) {
+    return error;
+  }
+};
 
-async function createBilling(params) {
-    try {
-        const obj = await params;
-        await db.Billing_Address.create(obj)
-        return{msg:"created successfully",status:201}
-    } catch (error) {
-        console.log("error:",error);
-        return error
+// READ ALL
+const getAllBilling = async () => {
+  try {
+    const billingAddresses = await billingAddress.find();
+    return billingAddresses;
+  } catch (error) {
+    return error;
+  }
+};
+
+// READ ONE
+const getBilling = async (id) => {
+  try {
+    const billing = await billingAddress.findById(id);
+
+    if (!billing) {
+      return {
+        success: false,
+        message: "Billing address not found",
+      };
     }
-}
 
-async function getAllBilling() {
-    try {
-        const data = await db.Billing_Address.findAll();
-        return {data,status:200}
-    } catch (error) {
-        console.log(error);
-        
-        return error
+    return billing;
+  } catch (error) {
+    return error;
+  }
+};
+
+// UPDATE
+const updateBilling = async (id, params) => {
+  try {
+    const billing = await billingAddress.findByIdAndUpdate(
+      id,
+      params,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!billing) {
+      return {
+        success: false,
+        message: "Billing address not found",
+      };
     }
-}
+
+    return billing;
+  } catch (error) {
+    return error;
+  }
+};
+
+// DELETE
+const deleteBilling = async (id) => {
+  try {
+    const billing = await billingAddress.findByIdAndDelete(id);
+
+    if (!billing) {
+      return {
+        success: false,
+        message: "Billing address not found",
+      };
+    }
+
+    return "Billing address deleted successfully";
+  } catch (error) {
+    return error;
+  }
+};
+
+module.exports = {
+  createBilling,
+  getAllBilling,
+  getBilling,
+  updateBilling,
+  deleteBilling,
+};
